@@ -5,4 +5,4 @@ Organize your local bibliography
 Helps you to organize your personal collection of references.
 
 .. |BlackStyle| image:: https://img.shields.io/badge/code%20style-black-000000.svg
- 32    :target: https://github.com/psf/black
+    :target: https://github.com/psf/black
