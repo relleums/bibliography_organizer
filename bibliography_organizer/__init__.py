@@ -4,6 +4,7 @@ Organize your bibliography
 import minimal_bibtex_io
 import glob
 import os
+from . import optical_reader
 
 
 def read_bib_entry(path):
@@ -32,14 +33,14 @@ def entry_estimate_status(entry_dir):
     entry_dir = os.path.normpath(entry_dir)
     st = {}
 
-    st["originals_dir_exists"] = os.path.isdir(
+    st["original_dir_exists"] = os.path.isdir(
         os.path.join(entry_dir, "original")
     )
-    st["originals_files"] = glob.glob(os.path.join(entry_dir, "original", "*"))
-    if st["originals_files"]:
-        st["originals_files_exist"] = True
+    st["original_files"] = glob.glob(os.path.join(entry_dir, "original", "*"))
+    if st["original_files"]:
+        st["original_files_exist"] = True
     else:
-        st["originals_files_exist"] = False
+        st["original_files_exist"] = False
 
     reference_bib_path = os.path.join(entry_dir, "reference.bib")
     st["reference_bib_exists"] = os.path.exists(reference_bib_path)
@@ -111,10 +112,10 @@ def bib_print_status(bib_dir):
 
         status = entry_estimate_status(entry_dir)
 
-        if not status["originals_dir_exists"]:
+        if not status["original_dir_exists"]:
             print(_ERR(ck, "has no original-dir"))
         else:
-            if not status["originals_files_exist"]:
+            if not status["original_files_exist"]:
                 print(_ERR(ck, "has no originals"))
 
         if not status["reference_bib_exists"]:
@@ -145,3 +146,40 @@ def bib_make_bibtex_file(bib_dir):
     }
 
     return minimal_bibtex_io.dumps(bib)
+
+
+def bib_read_originals_to_txt(bib_dir, overwrite_existing_output=False):
+    entry_dirs = _get_entry_dirs(bib_dir)
+
+    for entry_dir in entry_dirs:
+        entry_status = entry_estimate_status(entry_dir)
+
+        if entry_status["original_files_exist"]:
+            os.makedirs(os.path.join(entry_dir, "ocr"), exist_ok=True)
+
+            original_file_paths = glob.glob(
+                os.path.join(entry_dir, "original", "*")
+            )
+            basenames_ext = [os.path.basename(p) for p in original_file_paths]
+            basenames = [os.path.splitext(b)[0] for b in basenames_ext]
+
+            for i in range(len(original_file_paths)):
+                document_path=os.path.join(
+                    entry_dir, "original", basenames_ext[i]
+                )
+                out_path = os.path.join(
+                    entry_dir, "ocr", basenames[i] + ".tar"
+                )
+                if os.path.exists(out_path) and not overwrite_existing_output:
+                    print("Already done  : ", basenames[i])
+                else:
+                    print("Read original : ", basenames[i])
+                    try:
+                        optical_reader.document_to_string_archive(
+                            document_path=document_path,
+                            out_path=out_path,
+                        )
+                    except Exception as err:
+                        print(err)
+        else:
+            print("No original   : ", os.path.basename(entry_dir))
