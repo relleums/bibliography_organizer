@@ -1,6 +1,7 @@
 import bibliography_organizer as biborg
 import argparse
 
+
 def main():
     parser = argparse.ArgumentParser(
         description="Print status of bibliography."

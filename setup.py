@@ -13,7 +13,7 @@ setuptools.setup(
     author="Sebastian Achim Mueller",
     author_email="sebastian-achim.mueller@mpi-hd.mpg.de",
     license="MIT",
-    packages=["bibliography_organizer","bibliography_organizer.scripts"],
+    packages=["bibliography_organizer", "bibliography_organizer.scripts"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
@@ -22,8 +22,8 @@ setuptools.setup(
         "Intended Audience :: Science/Research",
     ],
     entry_points={
-        'console_scripts': [
-            'biborg-status='+'bibliography_organizer.scripts.status:main'
+        "console_scripts": [
+            "biborg-status=" + "bibliography_organizer.scripts.status:main"
         ]
-    }
+    },
 )

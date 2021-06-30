@@ -35,9 +35,7 @@ def entry_estimate_status(entry_dir):
     st["originals_dir_exists"] = os.path.isdir(
         os.path.join(entry_dir, "original")
     )
-    st["originals_files"] = glob.glob(
-        os.path.join(entry_dir, "original", "*")
-    )
+    st["originals_files"] = glob.glob(os.path.join(entry_dir, "original", "*"))
     if st["originals_files"]:
         st["originals_files_exist"] = True
     else:
