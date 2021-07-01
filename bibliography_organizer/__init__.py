@@ -83,13 +83,32 @@ def _ERR(citekey, msg):
     )
 
 
-def _get_entry_dirs(bib_dir):
+def _bib_get_entry_dirs(bib_dir):
     bib_dir = os.path.normpath(bib_dir)
-    return glob.glob(os.path.join(bib_dir, "*"))
+    entry_dirs = glob.glob(os.path.join(bib_dir, "*"))
+    entry_dirs.sort()
+    return entry_dirs
+
+
+PRINTABLE = ["jpg", "jpeg", "ps", "pdf", "png", "ppm"]
+
+
+def _is_printable(path):
+    ext = os.path.splitext(path)[1]
+    ext = str.lower(ext)
+    ext = str.replace(ext, ".", "")
+    return ext in PRINTABLE
+
+
+def _entry_get_original_paths(entry_dir):
+    entry_dir = os.path.normpath(entry_dir)
+    original_file_paths = glob.glob(os.path.join(entry_dir, "original", "*"))
+    original_file_paths.sort()
+    return original_file_paths
 
 
 def bib_print_status(bib_dir):
-    entry_dirs = _get_entry_dirs(bib_dir)
+    entry_dirs = _bib_get_entry_dirs(bib_dir=bib_dir)
 
     if len(entry_dirs) == 0:
         print("No bibliography entries in '{:s}'".format(bib_dir))
@@ -129,7 +148,7 @@ def bib_print_status(bib_dir):
 
 
 def bib_make_bibtex_file(bib_dir):
-    entry_dirs = _get_entry_dirs(bib_dir)
+    entry_dirs = _bib_get_entry_dirs(bib_dir)
 
     entries = []
     for entry_dir in entry_dirs:
@@ -149,7 +168,7 @@ def bib_make_bibtex_file(bib_dir):
 
 
 def bib_read_originals_to_txt(bib_dir, overwrite_existing_output=False):
-    entry_dirs = _get_entry_dirs(bib_dir)
+    entry_dirs = _bib_get_entry_dirs(bib_dir=bib_dir)
 
     for entry_dir in entry_dirs:
         entry_status = entry_estimate_status(entry_dir)
@@ -157,9 +176,7 @@ def bib_read_originals_to_txt(bib_dir, overwrite_existing_output=False):
         if entry_status["original_files_exist"]:
             os.makedirs(os.path.join(entry_dir, "ocr"), exist_ok=True)
 
-            original_file_paths = glob.glob(
-                os.path.join(entry_dir, "original", "*")
-            )
+            original_file_paths = _entry_get_original_paths(entry_dir)
             basenames_ext = [os.path.basename(p) for p in original_file_paths]
             basenames = [os.path.splitext(b)[0] for b in basenames_ext]
 
@@ -183,3 +200,26 @@ def bib_read_originals_to_txt(bib_dir, overwrite_existing_output=False):
                         print(err)
         else:
             print("No original   : ", os.path.basename(entry_dir))
+
+
+def bib_make_icons(bib_dir, overwrite_existing_output=False):
+    entry_dirs = _bib_get_entry_dirs(bib_dir=bib_dir)
+
+    for entry_dir in entry_dirs:
+        citekey = os.path.basename(entry_dir)
+        original_file_paths = _entry_get_original_paths(entry_dir)
+        original_file_paths = [p for p in original_file_paths if _is_printable(p)]
+        if len(original_file_paths) > 0:
+            icon_path = os.path.join(entry_dir, "icon.jpg")
+
+            if not os.path.exists(icon_path) or overwrite_existing_output:
+                print(citekey, ", Create icon.")
+                optical_reader.extract_icon_from_document(
+                    document_path=original_file_paths[0],
+                    out_path=icon_path,
+                    out_size=100.0e3
+                )
+            else:
+                print(citekey, ", Skip. Already done.")
+        else:
+            print(citekey, ", No originals.")

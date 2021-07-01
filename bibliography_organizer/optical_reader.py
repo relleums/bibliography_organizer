@@ -9,10 +9,59 @@ import shutil
 import PIL
 
 
+def extract_icon_from_document(document_path, out_path, out_size=100.0e3):
+    out_path = os.path.normpath(out_path)
+    dirname = os.path.dirname(out_path)
+    ext = os.path.splitext(out_path)[1]
+    basename = os.path.basename(out_path)
+    os.makedirs(dirname, exist_ok=True)
+
+    document_path_first_page = document_path+"[0]"
+
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        tmp0_out_path = os.path.join(tmp_dir, "0-" + basename + "." + ext)
+        tmp1_out_path = os.path.join(tmp_dir, "1-" + basename + "." + ext)
+
+        subprocess.call([
+            "convert",
+            "-density",
+            "150",
+            document_path_first_page,
+            tmp0_out_path,
+        ])
+        quality = 92
+        min_icon_size = 128
+        icon_size = 512
+        while quality > 20:
+            subprocess.call([
+                "convert",
+                tmp0_out_path,
+                "-resize",
+                "{:d}x{:d}^".format(icon_size, icon_size),
+                "-gravity",
+                "north",
+                "-extent",
+                "{:d}x{:d}".format(icon_size, icon_size),
+                "-quality",
+                str(quality),
+                tmp1_out_path,
+            ]),
+            actual_size = os.stat(tmp1_out_path).st_size
+            if actual_size <= out_size:
+                break
+            if icon_size > min_icon_size:
+                icon_size -= 8
+            else:
+                quality -= 2
+
+        shutil.move(src=tmp1_out_path, dst=out_path)
+
+
+
 def convert_documnet_to_images(document_path, out_dir, image_format="jpg"):
     os.makedirs(out_dir, exist_ok=True)
     call = [
-        "convert", "-quality", "0", "-density", "400",
+        "convert", "-quality", "92", "-density", "400",
         document_path, os.path.join(out_dir, "%06d."+image_format)
     ]
     subprocess.call(call)
