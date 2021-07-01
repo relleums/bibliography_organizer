@@ -5,7 +5,7 @@ import argparse
 def main():
     parser = argparse.ArgumentParser(
         description=(
-            "Create or update icons."
+            "Create or update icons. "
             "An icon.jpg is a small rendering of the original's first page."
         )
     )
@@ -17,6 +17,7 @@ def main():
     )
     parser.add_argument(
         "--overwrite",
+        metavar="",
         help="Overwrite existing icons, otherwise be lazy.",
     )
     args = parser.parse_args()
