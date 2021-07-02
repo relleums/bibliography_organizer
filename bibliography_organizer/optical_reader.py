@@ -14,38 +14,42 @@ def extract_icon_from_document(document_path, out_path, out_size=100.0e3):
     ext = os.path.splitext(out_path)[1]
     basename = os.path.basename(out_path)
 
-    document_path_first_page = document_path+"[0]"
+    document_path_first_page = document_path + "[0]"
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         tmp0_out_path = os.path.join(tmp_dir, "0-" + basename + "." + ext)
         tmp1_out_path = os.path.join(tmp_dir, "1-" + basename + "." + ext)
 
-        subprocess.call([
-            "convert",
-            "-density",
-            "150",
-            "-alpha",
-            "remove",
-            document_path_first_page,
-            tmp0_out_path,
-        ])
+        subprocess.call(
+            [
+                "convert",
+                "-density",
+                "150",
+                "-alpha",
+                "remove",
+                document_path_first_page,
+                tmp0_out_path,
+            ]
+        )
         quality = 92
         min_icon_size = 128
         icon_size = 512
         while quality > 20:
-            subprocess.call([
-                "convert",
-                tmp0_out_path,
-                "-resize",
-                "{:d}x{:d}^".format(icon_size, icon_size),
-                "-gravity",
-                "north",
-                "-extent",
-                "{:d}x{:d}".format(icon_size, icon_size),
-                "-quality",
-                str(quality),
-                tmp1_out_path,
-            ]),
+            subprocess.call(
+                [
+                    "convert",
+                    tmp0_out_path,
+                    "-resize",
+                    "{:d}x{:d}^".format(icon_size, icon_size),
+                    "-gravity",
+                    "north",
+                    "-extent",
+                    "{:d}x{:d}".format(icon_size, icon_size),
+                    "-quality",
+                    str(quality),
+                    tmp1_out_path,
+                ]
+            ),
             actual_size = os.stat(tmp1_out_path).st_size
             if actual_size <= out_size:
                 break
@@ -57,19 +61,25 @@ def extract_icon_from_document(document_path, out_path, out_size=100.0e3):
         shutil.move(src=tmp1_out_path, dst=out_path)
 
 
-
 def convert_documnet_to_images(document_path, out_dir, image_format="jpg"):
     os.makedirs(out_dir, exist_ok=True)
     call = [
-        "convert", "-quality", "92", "-density", "400",
-        document_path, os.path.join(out_dir, "%06d."+image_format)
+        "convert",
+        "-density",
+        "400",
+        "-alpha",
+        "remove",
+        "-quality",
+        "92",
+        document_path,
+        os.path.join(out_dir, "%06d." + image_format),
     ]
     subprocess.call(call)
 
 
 def parse_image_to_string(image_path):
     with PIL.Image.open(image_path) as img:
-        s =  pytesseract.image_to_string(img)
+        s = pytesseract.image_to_string(img)
     return s
 
 
@@ -81,16 +91,13 @@ def document_to_string_archive(document_path, out_path):
     with tempfile.TemporaryDirectory() as tmp_dir:
 
         convert_documnet_to_images(
-            document_path=document_path,
-            out_dir=tmp_dir,
-            image_format="jpg"
+            document_path=document_path, out_dir=tmp_dir, image_format="jpg"
         )
 
         image_paths = glob.glob(os.path.join(tmp_dir, "*.jpg"))
         img_basenames = [os.path.basename(p) for p in image_paths]
         img_basenames.sort()
         image_paths = [os.path.join(tmp_dir, bn) for bn in img_basenames]
-
 
         tmp_out_path = os.path.join(tmp_dir, "out.tar")
         with tarfile.open(tmp_out_path, "w") as tarout:
@@ -109,4 +116,3 @@ def document_to_string_archive(document_path, out_path):
                 tarout.addfile(tarinfo=info, fileobj=buff)
                 buff.close()
         shutil.move(src=tmp_out_path, dst=out_path)
-
