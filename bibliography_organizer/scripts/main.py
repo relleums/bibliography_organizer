@@ -12,8 +12,11 @@ def main():
 
     status = commands.add_parser('status', help='Print status.')
 
-    update = commands.add_parser('icons', help='Update entries.')
-    update.add_argument('--overwrite', action="store_true", help='Overwrite existing icons')
+    update = commands.add_parser('icons', help='Update icons in entries.')
+    update.add_argument('--overwrite', action="store_true", help='Overwrite existing icons.')
+
+    update = commands.add_parser('ocr', help='Run optical character recognition.')
+    update.add_argument('--overwrite', action="store_true", help='Overwrite existing ocrs.')
 
     args = parser.parse_args()
 
@@ -21,6 +24,11 @@ def main():
         biborg.bib_print_status(bib_dir=os.getcwd())
     elif args.command == "icons":
         biborg.bib_make_icons(
+            bib_dir=os.getcwd(),
+            overwrite_existing_output=args.overwrite
+        )
+    elif args.command == "ocr":
+        biborg.bib_make_ocr(
             bib_dir=os.getcwd(),
             overwrite_existing_output=args.overwrite
         )

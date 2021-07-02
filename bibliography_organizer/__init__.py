@@ -5,6 +5,7 @@ import minimal_bibtex_io
 import glob
 import os
 from . import optical_reader
+from . import search_index
 
 
 def read_bib_entries(path):
@@ -108,6 +109,17 @@ def _entry_get_original_paths(entry_dir):
     return original_file_paths
 
 
+def _entry_get_primary_original_path(entry_dir):
+    citekey = os.path.basename(entry_dir)
+    entry_dir = os.path.normpath(entry_dir)
+    paths = glob.glob(os.path.join(entry_dir, "original", citekey + "*"))
+    paths.sort()
+    if paths:
+        return paths[0]
+    else:
+        return None
+
+
 PRINTABLE = ["jpg", "jpeg", "ps", "pdf", "png", "ppm"]
 
 
@@ -158,60 +170,81 @@ def bib_make_bibtex_file(bib_dir):
     return minimal_bibtex_io.dumps(bib)
 
 
-def bib_read_originals_to_txt(bib_dir, overwrite_existing_output=False):
+def entry_make_ocr(entry_dir, overwrite_existing_output=False):
+    original_paths = _entry_get_original_paths(entry_dir)
+
+    if len(original_paths):
+        os.makedirs(os.path.join(entry_dir, "ocr"), exist_ok=True)
+        basenames_ext = [os.path.basename(p) for p in original_paths]
+
+        for i in range(len(original_paths)):
+            document_path = os.path.join(
+                entry_dir, "original", basenames_ext[i]
+            )
+            out_path = os.path.join(
+                entry_dir, "ocr", basenames_ext[i] + ".tar"
+            )
+            if os.path.exists(out_path) and not overwrite_existing_output:
+                print("Already done  : ", basenames_ext[i])
+            else:
+                print("Read original : ", basenames_ext[i])
+                try:
+                    optical_reader.document_to_string_archive(
+                        document_path=document_path, out_path=out_path,
+                    )
+                except Exception as err:
+                    print(err)
+    else:
+        print("No original   : ", os.path.basename(entry_dir))
+
+
+def bib_make_ocr(bib_dir, overwrite_existing_output=False):
     entry_dirs = _bib_get_entry_dirs(bib_dir=bib_dir)
-
     for entry_dir in entry_dirs:
-        entry_status = entry_estimate_status(entry_dir)
+        entry_make_ocr(
+            entry_dir=entry_dir,
+            overwrite_existing_output=overwrite_existing_output
+        )
 
-        if entry_status["original_files_exist"]:
-            os.makedirs(os.path.join(entry_dir, "ocr"), exist_ok=True)
 
-            original_file_paths = _entry_get_original_paths(entry_dir)
-            basenames_ext = [os.path.basename(p) for p in original_file_paths]
-            basenames = [os.path.splitext(b)[0] for b in basenames_ext]
+def entry_make_icon(entry_dir, overwrite_existing_output=False):
+    citekey = os.path.basename(entry_dir)
+    original_paths = _entry_get_original_paths(entry_dir)
+    if len(original_paths) > 0:
 
-            for i in range(len(original_file_paths)):
-                document_path = os.path.join(
-                    entry_dir, "original", basenames_ext[i]
-                )
-                out_path = os.path.join(
-                    entry_dir, "ocr", basenames[i] + ".tar"
-                )
-                if os.path.exists(out_path) and not overwrite_existing_output:
-                    print("Already done  : ", basenames[i])
-                else:
-                    print("Read original : ", basenames[i])
-                    try:
-                        optical_reader.document_to_string_archive(
-                            document_path=document_path, out_path=out_path,
-                        )
-                    except Exception as err:
-                        print(err)
+        primary_path = _entry_get_primary_original_path(
+            entry_dir=entry_dir
+        )
+        document_path = primary_path if primary_path else original_paths[0]
+
+        icon_path = os.path.join(entry_dir, "icon.jpg")
+        if not os.path.exists(icon_path) or overwrite_existing_output:
+            print(citekey, ", Create icon.")
+            optical_reader.extract_icon_from_document(
+                document_path=document_path,
+                out_path=icon_path,
+                out_size=100.0e3,
+            )
         else:
-            print("No original   : ", os.path.basename(entry_dir))
+            print(citekey, ", Skip. Already done.")
+    else:
+        print(citekey, ", No originals.")
 
 
 def bib_make_icons(bib_dir, overwrite_existing_output=False):
     entry_dirs = _bib_get_entry_dirs(bib_dir=bib_dir)
-
     for entry_dir in entry_dirs:
-        citekey = os.path.basename(entry_dir)
-        original_file_paths = _entry_get_original_paths(entry_dir)
-        original_file_paths = [
-            p for p in original_file_paths if _is_printable(p)
-        ]
-        if len(original_file_paths) > 0:
-            icon_path = os.path.join(entry_dir, "icon.jpg")
+        entry_make_icon(
+            entry_dir=entry_dir,
+            overwrite_existing_output=overwrite_existing_output
+        )
 
-            if not os.path.exists(icon_path) or overwrite_existing_output:
-                print(citekey, ", Create icon.")
-                optical_reader.extract_icon_from_document(
-                    document_path=original_file_paths[0],
-                    out_path=icon_path,
-                    out_size=100.0e3,
-                )
-            else:
-                print(citekey, ", Skip. Already done.")
-        else:
-            print(citekey, ", No originals.")
+
+def bib_update_search_index(bib_dir):
+    entry_dirs = _bib_get_entry_dirs(bib_dir=bib_dir)
+    for entry_dir in entry_dirs:
+        ocrs = glob.glob(os.path.join(entry_dir, "ocr", "*.tar"))
+        if ocrs:
+            citekey = os.path.basename(entry_dir)
+            print(citekey)
+            search_index.add_entry(bib_dir=bib_dir, citekey=citekey)

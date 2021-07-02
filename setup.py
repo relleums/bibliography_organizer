@@ -14,7 +14,7 @@ setuptools.setup(
     author_email="sebastian-achim.mueller@mpi-hd.mpg.de",
     license="MIT",
     packages=["bibliography_organizer", "bibliography_organizer.scripts"],
-    install_requires=["minimal_bibtex_io", "pytesseract"],
+    install_requires=["minimal_bibtex_io", "pytesseract", "whoosh"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

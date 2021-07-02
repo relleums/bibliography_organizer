@@ -7,6 +7,8 @@ import tarfile
 import io
 import shutil
 import PIL
+import re
+import json
 
 
 def extract_icon_from_document(document_path, out_path, out_size=100.0e3):
@@ -116,3 +118,90 @@ def document_to_string_archive(document_path, out_path):
                 tarout.addfile(tarinfo=info, fileobj=buff)
                 buff.close()
         shutil.move(src=tmp_out_path, dst=out_path)
+
+
+def read_string_archive(path):
+    arc = {}
+    with tarfile.open(path, "r") as tarin:
+        for info in tarin:
+            assert str.endswith(info.name, ".txt")
+            assert str.startswith(info.name, "page_")
+            number_str = info.name[5:11]
+            page_number = int(number_str)
+            buff = tarin.extractfile(info)
+            text_b = buff.read()
+            text_u = bytes.decode(text_b, encoding='utf-8')
+            arc[page_number] = text_u
+    return arc
+
+
+def key_normalizer(key):
+    out = str(key)
+    out = str.strip(out)
+    out = str.lower(out)
+    out = re.sub(r'^\W+|\W+$', '', out)
+    try:
+        _ = float(out)
+        if len(out) < 4:
+            out = ""
+    except Exception as err:
+        pass
+    if len(out) < 2:
+        out = ""
+    return out
+
+
+def normalize_page(page_text):
+    out = str(page_text)
+    out = str.split(out)
+    ll = {}
+    for pos, token in enumerate(out):
+        ntoken = key_normalizer(token)
+        if ntoken:
+            if ntoken in ll:
+                ll[ntoken].append(pos)
+            else:
+                ll[ntoken] = [pos]
+    return ll
+
+
+def normalize_archive(arc):
+    arc_index = {}
+    for pagenumber in arc:
+        page_index = normalize_page(page_text=arc[pagenumber])
+
+        for token in page_index:
+            if token not in arc_index:
+                arc_index[token] = []
+            for token_pos in page_index[token]:
+                arc_index[token].append((pagenumber, token_pos))
+    return arc_index
+
+
+def archive_to_index(arc, filename):
+    ind = {}
+    ind["filename/page"] = []
+    for pagenumber in arc:
+        ind["filename/page"].append(filename + "{:06d}".format(pagenumber))
+    ind["index"] = {}
+    for pagenumber in arc:
+        page_text = arc[pagenumber]
+        block = normalize_text_block(text=page_text)
+        for token in block:
+            if token in ind["index"]:
+                ind["index"][token].append(pagenumber)
+            else:
+                ind["index"][token] = [pagenumber]
+    return ind
+
+
+def serialize_search_index(search_index):
+    buff = io.BytesIO()
+    for token in search_index:
+        buff.write(str.encode(token, encoding="utf8"))
+        buff.write(b"\n")
+        ref_str = json.dumps(search_index[token], indent=None)
+        buff.write(str.encode(ref_str, encoding="utf8"))
+        buff.write(b"\n")
+    buff.seek(0)
+    return buff.read()
