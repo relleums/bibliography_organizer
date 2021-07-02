@@ -24,8 +24,7 @@ setuptools.setup(
     ],
     entry_points={
         "console_scripts": [
-            "biborg-status=bibliography_organizer.scripts.status:main",
-            "biborg-icons=bibliography_organizer.scripts.update_icons:main",
+            "biborg=bibliography_organizer.scripts.main:main",
         ]
     },
     python_requires=">=3",

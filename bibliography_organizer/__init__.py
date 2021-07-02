@@ -129,8 +129,8 @@ def bib_print_status(bib_dir):
             for msg in errors:
                 err_code_str = msg[0:4]
                 err_msg = msg[5:]
-                print("{:s} : {:40s} {:s}".format(
-                    err_code_str, citekey, err_msg)
+                print("{:40s} {:s} {:s}".format(
+                    citekey, err_code_str, err_msg)
                 )
     else:
         print("No entries in '{:s}'".format(bib_dir))
