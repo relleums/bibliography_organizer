@@ -17,7 +17,7 @@ def main():
     )
     parser.add_argument(
         "--overwrite",
-        metavar="",
+        action='store_true',
         help="Overwrite existing icons, otherwise be lazy.",
     )
     args = parser.parse_args()
