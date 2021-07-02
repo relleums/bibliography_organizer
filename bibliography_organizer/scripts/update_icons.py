@@ -17,14 +17,14 @@ def main():
     )
     parser.add_argument(
         "--overwrite",
-        action='store_true',
+        action="store_true",
         help="Overwrite existing icons, otherwise be lazy.",
     )
     args = parser.parse_args()
     biborg.bib_make_icons(
-        bib_dir=args.bibdir,
-        overwrite_existing_output=args.overwrite
+        bib_dir=args.bibdir, overwrite_existing_output=args.overwrite
     )
+
 
 if __name__ == "__main__":
     main()

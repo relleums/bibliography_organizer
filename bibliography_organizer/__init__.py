@@ -181,7 +181,7 @@ def bib_read_originals_to_txt(bib_dir, overwrite_existing_output=False):
             basenames = [os.path.splitext(b)[0] for b in basenames_ext]
 
             for i in range(len(original_file_paths)):
-                document_path=os.path.join(
+                document_path = os.path.join(
                     entry_dir, "original", basenames_ext[i]
                 )
                 out_path = os.path.join(
@@ -193,8 +193,7 @@ def bib_read_originals_to_txt(bib_dir, overwrite_existing_output=False):
                     print("Read original : ", basenames[i])
                     try:
                         optical_reader.document_to_string_archive(
-                            document_path=document_path,
-                            out_path=out_path,
+                            document_path=document_path, out_path=out_path,
                         )
                     except Exception as err:
                         print(err)
@@ -208,7 +207,9 @@ def bib_make_icons(bib_dir, overwrite_existing_output=False):
     for entry_dir in entry_dirs:
         citekey = os.path.basename(entry_dir)
         original_file_paths = _entry_get_original_paths(entry_dir)
-        original_file_paths = [p for p in original_file_paths if _is_printable(p)]
+        original_file_paths = [
+            p for p in original_file_paths if _is_printable(p)
+        ]
         if len(original_file_paths) > 0:
             icon_path = os.path.join(entry_dir, "icon.jpg")
 
@@ -217,7 +218,7 @@ def bib_make_icons(bib_dir, overwrite_existing_output=False):
                 optical_reader.extract_icon_from_document(
                     document_path=original_file_paths[0],
                     out_path=icon_path,
-                    out_size=100.0e3
+                    out_size=100.0e3,
                 )
             else:
                 print(citekey, ", Skip. Already done.")
