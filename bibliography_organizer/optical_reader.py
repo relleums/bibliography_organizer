@@ -130,7 +130,7 @@ def read_string_archive(path):
             page_number = int(number_str)
             buff = tarin.extractfile(info)
             text_b = buff.read()
-            text_u = bytes.decode(text_b, encoding='utf-8')
+            text_u = bytes.decode(text_b, encoding="utf-8")
             arc[page_number] = text_u
     return arc
 
@@ -139,7 +139,7 @@ def key_normalizer(key):
     out = str(key)
     out = str.strip(out)
     out = str.lower(out)
-    out = re.sub(r'^\W+|\W+$', '', out)
+    out = re.sub(r"^\W+|\W+$", "", out)
     try:
         _ = float(out)
         if len(out) < 4:

@@ -6,7 +6,7 @@ with open("README.rst", "r") as f:
 
 setuptools.setup(
     name="bibliography_organizer",
-    version="0.0.1",
+    version="1.0.0",
     description="Organize your bibliography",
     long_description=long_description,
     url="https://github.com/relleums",
@@ -23,9 +23,7 @@ setuptools.setup(
         "Intended Audience :: Science/Research",
     ],
     entry_points={
-        "console_scripts": [
-            "biborg=bibliography_organizer.scripts.main:main",
-        ]
+        "console_scripts": ["biborg=bibliography_organizer.scripts.main:main",]
     },
     python_requires=">=3",
 )

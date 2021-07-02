@@ -7,6 +7,7 @@ import os
 import glob
 from . import optical_reader
 
+
 def _make_path(citekey, original_filename, pagenumber):
     return str.join(
         "/", [citekey, original_filename, "{:06d}".format(pagenumber)]
@@ -21,8 +22,7 @@ def init(bib_dir):
     os.makedirs(index_dir, exist_ok=True)
 
     index_schema = whoosh.fields.Schema(
-        content=whoosh.fields.TEXT,
-        path=whoosh.fields.ID(stored=True),
+        content=whoosh.fields.TEXT, path=whoosh.fields.ID(stored=True),
     )
 
     ix = whoosh.index.create_in(index_dir, index_schema)
@@ -56,7 +56,7 @@ def add_entry(bib_dir, citekey):
                 path=_make_path(
                     citekey=citekey,
                     original_filename=original_filename,
-                    pagenumber=pagenumber
+                    pagenumber=pagenumber,
                 ),
             )
     writer.commit()
@@ -85,11 +85,13 @@ class Search:
                 citekey, original_filename, pagenumber = str.split(
                     hit["path"], "/"
                 )
-                out.append({
-                    "citekey": citekey,
-                    "original": original_filename,
-                    "pagenumber": int(pagenumber),
-                })
+                out.append(
+                    {
+                        "citekey": citekey,
+                        "original": original_filename,
+                        "pagenumber": int(pagenumber),
+                    }
+                )
         return out
 
     def correct(self, mistyped_word):

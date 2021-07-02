@@ -141,13 +141,12 @@ def bib_print_status(bib_dir):
             for msg in errors:
                 err_code_str = msg[0:4]
                 err_msg = msg[5:]
-                print("{:40s} {:s} {:s}".format(
-                    citekey, err_code_str, err_msg)
+                print(
+                    "{:40s} {:s} {:s}".format(citekey, err_code_str, err_msg)
                 )
     else:
         print("No entries in '{:s}'".format(bib_dir))
         print("Maybe thit is not a bibliography directory?")
-
 
 
 def bib_make_bibtex_file(bib_dir):
@@ -156,7 +155,9 @@ def bib_make_bibtex_file(bib_dir):
     entries = []
     for entry_dir in entry_dirs:
         try:
-            entry = read_bib_entries(os.path.join(entry_dir, "reference.bib"))[0]
+            entry = read_bib_entries(os.path.join(entry_dir, "reference.bib"))[
+                0
+            ]
             entries.append(entry)
         except Exception as err:
             print(err)
@@ -203,7 +204,7 @@ def bib_make_ocr(bib_dir, overwrite_existing_output=False):
     for entry_dir in entry_dirs:
         entry_make_ocr(
             entry_dir=entry_dir,
-            overwrite_existing_output=overwrite_existing_output
+            overwrite_existing_output=overwrite_existing_output,
         )
 
 
@@ -212,9 +213,7 @@ def entry_make_icon(entry_dir, overwrite_existing_output=False):
     original_paths = _entry_get_original_paths(entry_dir)
     if len(original_paths) > 0:
 
-        primary_path = _entry_get_primary_original_path(
-            entry_dir=entry_dir
-        )
+        primary_path = _entry_get_primary_original_path(entry_dir=entry_dir)
         document_path = primary_path if primary_path else original_paths[0]
 
         icon_path = os.path.join(entry_dir, "icon.jpg")
@@ -236,7 +235,7 @@ def bib_make_icons(bib_dir, overwrite_existing_output=False):
     for entry_dir in entry_dirs:
         entry_make_icon(
             entry_dir=entry_dir,
-            overwrite_existing_output=overwrite_existing_output
+            overwrite_existing_output=overwrite_existing_output,
         )
 
 
