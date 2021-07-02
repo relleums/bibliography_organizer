@@ -11,10 +11,8 @@ import PIL
 
 def extract_icon_from_document(document_path, out_path, out_size=100.0e3):
     out_path = os.path.normpath(out_path)
-    dirname = os.path.dirname(out_path)
     ext = os.path.splitext(out_path)[1]
     basename = os.path.basename(out_path)
-    os.makedirs(dirname, exist_ok=True)
 
     document_path_first_page = document_path+"[0]"
 
@@ -26,6 +24,8 @@ def extract_icon_from_document(document_path, out_path, out_size=100.0e3):
             "convert",
             "-density",
             "150",
+            "-alpha",
+            "remove",
             document_path_first_page,
             tmp0_out_path,
         ])
