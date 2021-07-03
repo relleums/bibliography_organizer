@@ -64,19 +64,34 @@ def extract_icon_from_document(document_path, out_path, out_size=100.0e3):
 
 
 def convert_documnet_to_images(document_path, out_dir, image_format="jpg"):
-    os.makedirs(out_dir, exist_ok=True)
-    call = [
-        "convert",
-        "-density",
-        "400",
-        "-alpha",
-        "remove",
-        "-quality",
-        "92",
-        document_path,
-        os.path.join(out_dir, "%06d." + image_format),
-    ]
-    subprocess.call(call)
+    pagenumber = 0
+    return_code = 0
+    while return_code == 0:
+        process = subprocess.Popen(
+            [
+                "convert",
+                "-density",
+                "200",
+                "-alpha",
+                "remove",
+                "-quality",
+                "92",
+                document_path + "[{:d}]".format(pagenumber),
+                os.path.join(
+                    out_dir, "{:06d}.".format(pagenumber) + image_format
+                ),
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        return_code = process.wait()
+        stdout, stderr = process.communicate()
+        if stderr:
+            if bytes.find(stderr, b"FirstPage > LastPage") == -1:
+                print(stderr)
+        if stdout:
+            print(stdout)
+        pagenumber += 1
 
 
 def parse_image_to_string(image_path):
