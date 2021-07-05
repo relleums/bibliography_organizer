@@ -3,6 +3,7 @@ import glob
 from . import Status
 from . import Bibtex
 from . import Entry
+from . import Index
 
 
 def list_entry_dirs(bib_dir):
@@ -15,10 +16,13 @@ def list_entry_dirs(bib_dir):
 def init(bib_dir):
     bib_dir = os.path.normpath(bib_dir)
     os.makedirs(os.path.join(bib_dir, ".bibliography_organizer"))
-
     with open(os.path.join(bib_dir, ".gitignore"), "wt") as f:
         f.write("icon.jpg\n")
         f.write("ocr\n")
+
+    index_dir = Index.get_index_dir(bib_dir)
+    os.makedirs(index_dir)
+    Index.make_clean_index(bib_dir=bib_dir)
 
 
 def print_status(bib_dir):
@@ -52,30 +56,3 @@ def make_bibtex_file(bib_dir):
     }
 
     return minimal_bibtex_io.dumps(bib)
-
-
-def update_entries(bib_dir, overwrite_existing_output=False):
-    entry_dirs = list_entry_dirs(bib_dir=bib_dir)
-    for entry_dir in entry_dirs:
-        Entry.make_optical_character_recognition(
-            entry_dir=entry_dir,
-            overwrite_existing_output=overwrite_existing_output,
-        )
-
-
-def update_icons(bib_dir, overwrite_existing_output=False):
-    entry_dirs = list_entry_dirs(bib_dir=bib_dir)
-    for entry_dir in entry_dirs:
-        Entry.make_icon(
-            entry_dir=entry_dir,
-            overwrite_existing_output=overwrite_existing_output,
-        )
-
-
-def update_search_index(bib_dir):
-    entry_dirs = list_entry_dirs(bib_dir=bib_dir)
-    for entry_dir in entry_dirs:
-        ocrs = glob.glob(os.path.join(entry_dir, "ocr", "*.tar"))
-        if ocrs:
-            citekey = os.path.basename(entry_dir)
-            Index.add_entry(bib_dir=bib_dir, citekey=citekey)

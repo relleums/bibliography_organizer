@@ -12,7 +12,7 @@ from . import Bibliography
 def get_schema():
     return whoosh.fields.Schema(
         path=whoosh.fields.ID(unique=True, stored=True),
-        content=whoosh.fields.TEXT,
+        content=whoosh.fields.TEXT(stored=True),
         modtime=whoosh.fields.STORED
     )
 
@@ -85,33 +85,36 @@ def increment_index(bib_dir):
     with index.searcher() as searcher:
         index_writer = index.writer()
 
-        # Loop over the stored fields in the index
         for fields in searcher.all_stored_fields():
             indexed_path = fields['path']
+            citekey, original_filename = _split_path(indexed_path)
             indexed_paths.add(os.path.join(bib_dir, indexed_path))
 
             if not os.path.exists(indexed_path):
-                # This file was deleted since it was indexed
                 index_writer.delete_by_term('path', indexed_path)
+                print(
+                    citekey,
+                    original_filename,
+                    "Delete from Index.",
+                    "This file was deleted since it was indexed"
+                )
 
             else:
-                # Check if this file was changed since it
-                # was indexed
                 indexed_time = fields['modtime']
                 mtime = os.path.getmtime(indexed_path)
                 if mtime > indexed_time:
-                    # The file has changed, delete it and add it to the list of
-                    # files to reindex
                     index_writer.delete_by_term('path', indexed_path)
                     to_index.add(os.path.join(bib_dir, indexed_path))
+                    print(
+                        citekey,
+                        original_filename,
+                        "The file has changed, delete and reindex"
+                    )
 
-    # Loop over the files in the filesystem
-    # Assume we have a function that gathers the filenames of the
-    # documents to be indexed
     for path in list_all_docs_in_bibliography(bib_dir=bib_dir):
         if path in to_index or path not in indexed_paths:
-            # This is either a file that's changed, or a new file
-            # that wasn't indexed before. So index it!
+            citekey, original_filename = _split_path(path)
+            print(citekey, original_filename, "Add to index.")
             add_doc(index_writer=index_writer, path=path)
 
     index_writer.commit()
@@ -133,6 +136,17 @@ def list_entries(bib_dir):
     return out
 
 
+def _split_path(path):
+    p = str(path)
+    p, filename = os.path.split(p)
+    p, ocr_dir = os.path.split(p)
+    assert ocr_dir == "ocr"
+    p, citekey = os.path.split(p)
+    original_filename, tar_ext = os.path.splitext(filename)
+    assert tar_ext == ".tar"
+    return citekey, original_filename
+
+
 class Search:
     def __init__(self, bib_dir):
         self.ix = whoosh.index.open_dir(get_index_dir(bib_dir))
@@ -144,19 +158,12 @@ class Search:
         with self.ix.searcher() as searcher:
             hits = searcher.search(myquery)
             for hit in hits:
-                path = str(hit["path"])
-                path, filename = os.path.split(path)
-                path, ocr_dir = os.path.split(path)
-                assert ocr_dir == "ocr"
-                path, citekey = os.path.split(path)
-
-                original_filename, tar_ext = os.path.splitext(filename)
-                assert tar_ext == ".tar"
-
+                citekey, original_filename = _split_path(hit["path"])
                 out.append(
                     {
                         "citekey": citekey,
                         "original": original_filename,
+                        "highlight": hit.highlights("content",),
                     }
                 )
         return out

@@ -47,25 +47,40 @@ def main():
 
 
     args = parser.parse_args()
+    bib_dir = os.getcwd()
 
     if args.command == "init":
-        biborg.Bibliography.init(bib_dir=os.getcwd())
+        biborg.Bibliography.init(bib_dir=bib_dir)
 
     elif args.command == "status":
         if args.entry_dir:
             biborg.Entry.print_status(entry_dir=args.entry_dir)
         else:
-            biborg.Bibliography.print_status(bib_dir=os.getcwd())
+            biborg.Bibliography.print_status(bib_dir=bib_dir)
 
     elif args.command == "search":
-        search_instance = biborg.Index.Search(bib_dir=os.getcwd())
+        search_instance = biborg.Index.Search(bib_dir=bib_dir)
         search_results = search_instance.search(args.phrase)
-        print(search_results)
+
+        for search_result in search_results:
+            entry_dir = os.path.join(bib_dir, search_result["citekey"])
+            biborg.Entry.print_overview(
+                entry_dir,
+                original_filename=search_result["original"]
+            )
 
     elif args.command == "update":
-        biborg.bib_make_icons(
-            bib_dir=os.getcwd(), overwrite_existing_output=args.overwrite
-        )
+        entry_dirs = biborg.Bibliography.list_entry_dirs(bib_dir=bib_dir)
+        for entry_dir in entry_dirs:
+            biborg.Entry.make_icon(
+                entry_dir=entry_dir,
+                overwrite=args.overwrite,
+            )
+            biborg.Entry.make_optical_character_recognition(
+                entry_dir=entry_dir,
+                overwrite=args.overwrite,
+            )
+        biborg.Index.increment_index(bib_dir=bib_dir)
 
 
 if __name__ == "__main__":

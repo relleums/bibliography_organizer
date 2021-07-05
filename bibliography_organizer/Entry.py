@@ -1,8 +1,11 @@
 import os
 import glob
+import textwrap
 from . import Document
 from . import Reader
 from . import Status
+from . import Bibtex
+
 
 
 def list_original_paths(entry_dir):
@@ -27,7 +30,12 @@ def list_original_paths(entry_dir):
     return out
 
 
-def make_icon(entry_dir, overwrite=False):
+def vprint(verbose, *args):
+    if verbose:
+        print(*args)
+
+
+def make_icon(entry_dir, overwrite=False, verbose=False):
     entry_dir = os.path.normpath(entry_dir)
     citekey = os.path.basename(entry_dir)
     original_paths = list_original_paths(entry_dir)
@@ -42,13 +50,14 @@ def make_icon(entry_dir, overwrite=False):
                 out_size=100.0e3,
             )
         else:
-            print(citekey, ", Skip. Already done.")
+            vprint(verbose, citekey, ", Skip. Already done.")
     else:
-        print(citekey, ", No originals.")
+        vprint(verbose, citekey, ", No originals.")
 
 
-def make_optical_character_recognition(entry_dir, overwrite=False):
+def make_optical_character_recognition(entry_dir, overwrite=False, verbose=False):
     entry_dir = os.path.normpath(entry_dir)
+    citekey = os.path.basename(entry_dir)
     original_paths = list_original_paths(entry_dir)
 
     if len(original_paths):
@@ -63,9 +72,9 @@ def make_optical_character_recognition(entry_dir, overwrite=False):
                 entry_dir, "ocr", basenames_ext[i] + ".tar"
             )
             if os.path.exists(out_path) and not overwrite:
-                print("Already done  : ", basenames_ext[i])
+                vprint(verbose, citekey, ", Already done", basenames_ext[i])
             else:
-                print("Read original : ", basenames_ext[i])
+                print(citekey, ", Read", basenames_ext[i])
                 try:
                     Reader.document_to_string_archive(
                         document_path=document_path, out_path=out_path,
@@ -73,7 +82,7 @@ def make_optical_character_recognition(entry_dir, overwrite=False):
                 except Exception as err:
                     print(err)
     else:
-        print("No original   : ", os.path.basename(entry_dir))
+        vprint(verbose, citekey, ", No originals")
 
 
 def update(entry_dir, overwrite=False):
@@ -91,3 +100,44 @@ def print_status(entry_dir):
         print(
             "{:40s} {:s} {:s}".format(citekey, err_code_str, err_msg)
         )
+
+
+def _print_field(field, width, indent, num_lines=-1):
+    out = ""
+    out += " "*indent
+    lines = textwrap.wrap(Bibtex.normalize(field), width=width)
+    if num_lines > 0:
+        lines = lines[0:num_lines]
+    out += ("\n" + " "*indent).join(lines) +'\n'
+    return out
+
+
+def print_overview(
+    entry_dir,
+    width=79,
+    indent=4,
+    original_filename=None,
+    num_filed_lines=1
+):
+    citekey = os.path.basename(entry_dir)
+
+    out = citekey
+    if original_filename:
+        out += " : " + original_filename
+    out += "\n"
+    out += "-"*len(citekey) + "\n"
+
+    bib_file_path = os.path.join(entry_dir, "reference.bib")
+    if os.path.exists(bib_file_path):
+        bib = Bibtex.read_bib_entries(path=bib_file_path)[0]
+        fields = bib["fields"]
+
+        for key in ["title", "author", "year"]:
+            if key in fields:
+                out += _print_field(
+                    fields[key],
+                    width=width,
+                    indent=indent,
+                    num_lines=num_filed_lines
+                )
+    print(out)

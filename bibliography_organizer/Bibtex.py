@@ -14,3 +14,11 @@ def read_bib_entries(path):
         print("WARNING: Ignoring @string and @preamble in {:s}".format(path))
 
     return bib["entries"]
+
+
+def normalize(text):
+    raw = str(text)
+    raw = raw.replace("{", "")
+    raw = raw.replace("}", "")
+    raw = " ".join(raw.split())
+    return raw
