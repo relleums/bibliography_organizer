@@ -4,23 +4,58 @@ from . import Entry
 from . import Bibtex
 
 
+def _has_upper_char(text):
+    for char in text:
+        if str.isupper(char):
+            return True
+    return False
+
+
+def _has_space_char(text):
+    for char in text:
+        if str.isspace(char):
+            return True
+    return False
+
+
 def list_errors_in_citekey(citekey):
     e = []
     if len(citekey) == 0:
         e.append("E100:Citekey is empty.")
 
-    for char in citekey:
-        if str.isupper(char):
-            e.append("E101:Citekey has upper case.")
-            break
+    if _has_upper_char(citekey):
+        e.append("E101:Citekey has upper case.")
 
-    for char in citekey:
-        if str.isspace(char):
-            e.append("E102:Citekey has whitespaces.")
-            break
+    if _has_space_char(citekey):
+        e.append("E102:Citekey has whitespaces.")
 
     if str.find(citekey, "/") != -1:
         e.append("E103:Citekey has directory seperator '/'.")
+
+    return e
+
+
+def list_errors_in_bibtex_entry(bib_entry):
+    e = []
+
+    for key in bib_entry["fields"]:
+        if len(key) == 0:
+            e.append("E220:Bibtex fieldkey is empty.")
+
+        if _has_upper_char(key):
+            e.append("E221:Bibtex fieldkey '{:s}' has upper case.".format(key))
+
+        if _has_space_char(key):
+            e.append("E222:Bibtex fieldkey '{:s}' has whitespace.".format(key))
+
+        if str.find(key, "/") != -1:
+            e.append("E223:Bibtex fieldkey '{:s}' has seperator.".format(key))
+
+    if "title" not in bib_entry["fields"]:
+        e.append("E230:Bibtex has no 'title' field.")
+
+    if "author" not in bib_entry["fields"]:
+        e.append("E230:Bibtex has no 'author' field.")
 
     return e
 
@@ -48,6 +83,8 @@ def list_errors_in_entry(entry_dir):
 
             if bib_entry["citekey"] != citekey:
                 e.append("E204:File 'reference.bib' has different citekey.")
+
+            e += list_errors_in_bibtex_entry(bib_entry=bib_entry)
 
         except Exception as err:
             e.append("E202:File 'reference.bib' is invalid.")

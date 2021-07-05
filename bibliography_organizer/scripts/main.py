@@ -15,13 +15,6 @@ def main():
     )
 
     status = commands.add_parser("status", help="Print status.")
-    status.add_argument(
-        "entry_dir",
-        metavar="DIR",
-        nargs="?",
-        type=str,
-        help="Specify the entry.",
-    )
 
     search = commands.add_parser("search", help="Full text search.")
     search.add_argument(
@@ -51,10 +44,8 @@ def main():
         biborg.Bibliography.init(bib_dir=bib_dir)
 
     elif args.command == "status":
-        if args.entry_dir:
-            biborg.Entry.print_status(entry_dir=args.entry_dir)
-        else:
-            biborg.Bibliography.print_status(bib_dir=bib_dir)
+        for entry_dir in biborg.Bibliography.list_entry_dirs(bib_dir=bib_dir):
+            biborg.Entry.print_status(entry_dir)
 
     elif args.command == "search":
         search_instance = biborg.Index.Search(bib_dir=bib_dir)

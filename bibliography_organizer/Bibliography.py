@@ -5,6 +5,8 @@ from . import Bibtex
 from . import Entry
 from . import Index
 
+HIDDEN_WORK_DIRNAME = ".bibliography_organizer"
+
 
 def list_entry_dirs(bib_dir):
     bib_dir = os.path.normpath(bib_dir)
@@ -15,7 +17,7 @@ def list_entry_dirs(bib_dir):
 
 def init(bib_dir):
     bib_dir = os.path.normpath(bib_dir)
-    os.makedirs(os.path.join(bib_dir, ".bibliography_organizer"))
+    os.makedirs(os.path.join(bib_dir, HIDDEN_WORK_DIRNAME))
     with open(os.path.join(bib_dir, ".gitignore"), "wt") as f:
         f.write("icon.jpg\n")
         f.write("ocr\n")
@@ -23,17 +25,6 @@ def init(bib_dir):
     index_dir = Index.get_index_dir(bib_dir)
     os.makedirs(index_dir)
     Index.make_clean_index(bib_dir=bib_dir)
-
-
-def print_status(bib_dir):
-    entry_dirs = list_entry_dirs(bib_dir=bib_dir)
-
-    if len(entry_dirs):
-        for entry_dir in entry_dirs:
-            Entry.print_status(entry_dir)
-    else:
-        print("No entries in '{:s}'".format(bib_dir))
-        print("Maybe thit is not a bibliography directory?")
 
 
 def make_bibtex_file(bib_dir):

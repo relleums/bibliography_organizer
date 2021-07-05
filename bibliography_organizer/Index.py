@@ -8,6 +8,8 @@ import glob
 from . import Reader
 from . import Bibliography
 
+INDEX_DIRNAME = "full_text_search_index"
+
 
 def get_schema():
     return whoosh.fields.Schema(
@@ -15,20 +17,6 @@ def get_schema():
         content=whoosh.fields.TEXT(stored=True),
         modtime=whoosh.fields.STORED,
     )
-
-
-def init(bib_dir, clean=False):
-    bib_dir = os.path.normpath(bib_dir)
-    index_dir = get_index_dir(bib_dir)
-
-    if not os.path.exists(index_dir):
-        os.makedirs(index_dir)
-        clean = True
-
-    if clean:
-        make_clean_index(bib_dir=bib_dir)
-    else:
-        increment_index(bib_dir=bib_dir)
 
 
 def list_all_docs_in_bibliography(bib_dir):
@@ -45,21 +33,19 @@ def list_all_docs_in_bibliography(bib_dir):
 
 def add_doc(index_writer, path):
     path = os.path.normpath(path)
-    arc_path = str(path)
-    arc = Reader.read_string_archive(path=arc_path)
+    citekey, original_filename = _split_path(path)
+    print(citekey, "Add to index", original_filename)
 
-    path, filename = os.path.split(path)
-    path, ocr_dir = os.path.split(path)
-    assert ocr_dir == "ocr"
-    path, citekey = os.path.split(path)
+    assert os.path.splitext(path)[1] == ".tar"
+    arc = Reader.read_string_archive(path=path)
 
     content = ""
     for pagenumber in arc:
         content += arc[pagenumber] + "\n\n"
     index_writer.add_document(
         content=content,
-        path=os.path.join(citekey, "ocr", filename),
-        modtime=os.path.getmtime(arc_path),
+        path=os.path.join(citekey, "ocr", original_filename + ".tar"),
+        modtime=os.path.getmtime(path),
     )
 
 
@@ -69,6 +55,7 @@ def make_clean_index(bib_dir):
     index_writer = index.writer()
     for doc_path in list_all_docs_in_bibliography(bib_dir=bib_dir):
         add_doc(index_writer=index_writer, path=doc_path)
+    print("Commit changes to index.")
     index_writer.commit()
 
 
@@ -113,7 +100,6 @@ def increment_index(bib_dir):
     for path in list_all_docs_in_bibliography(bib_dir=bib_dir):
         if path in to_index or path not in indexed_paths:
             citekey, original_filename = _split_path(path)
-            print(citekey, original_filename, "Add to index.")
             add_doc(index_writer=index_writer, path=path)
 
     index_writer.commit()
@@ -122,7 +108,7 @@ def increment_index(bib_dir):
 def get_index_dir(bib_dir):
     bib_dir = os.path.normpath(bib_dir)
     return os.path.join(
-        bib_dir, ".bibliography_organizer", "full_text_search_index"
+        bib_dir, Bibliography.HIDDEN_WORK_DIRNAME, INDEX_DIRNAME
     )
 
 
