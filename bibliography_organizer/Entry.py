@@ -7,7 +7,6 @@ from . import Status
 from . import Bibtex
 
 
-
 def list_original_paths(entry_dir):
     """
     Returns a list of original documnet paths.
@@ -55,7 +54,9 @@ def make_icon(entry_dir, overwrite=False, verbose=False):
         vprint(verbose, citekey, ", No originals.")
 
 
-def make_optical_character_recognition(entry_dir, overwrite=False, verbose=False):
+def make_optical_character_recognition(
+    entry_dir, overwrite=False, verbose=False
+):
     entry_dir = os.path.normpath(entry_dir)
     citekey = os.path.basename(entry_dir)
     original_paths = list_original_paths(entry_dir)
@@ -97,27 +98,21 @@ def print_status(entry_dir):
     for msg in errors:
         err_code_str = msg[0:4]
         err_msg = msg[5:]
-        print(
-            "{:40s} {:s} {:s}".format(citekey, err_code_str, err_msg)
-        )
+        print("{:40s} {:s} {:s}".format(citekey, err_code_str, err_msg))
 
 
 def _print_field(field, width, indent, num_lines=-1):
     out = ""
-    out += " "*indent
+    out += " " * indent
     lines = textwrap.wrap(Bibtex.normalize(field), width=width)
     if num_lines > 0:
         lines = lines[0:num_lines]
-    out += ("\n" + " "*indent).join(lines) +'\n'
+    out += ("\n" + " " * indent).join(lines) + "\n"
     return out
 
 
 def print_overview(
-    entry_dir,
-    width=79,
-    indent=4,
-    original_filename=None,
-    num_filed_lines=1
+    entry_dir, width=79, indent=4, original_filename=None, num_filed_lines=1
 ):
     citekey = os.path.basename(entry_dir)
 
@@ -125,7 +120,7 @@ def print_overview(
     if original_filename:
         out += " : " + original_filename
     out += "\n"
-    out += "-"*len(citekey) + "\n"
+    out += "-" * len(citekey) + "\n"
 
     bib_file_path = os.path.join(entry_dir, "reference.bib")
     if os.path.exists(bib_file_path):
@@ -138,6 +133,6 @@ def print_overview(
                     fields[key],
                     width=width,
                     indent=indent,
-                    num_lines=num_filed_lines
+                    num_lines=num_filed_lines,
                 )
     print(out)

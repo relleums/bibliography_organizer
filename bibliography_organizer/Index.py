@@ -13,7 +13,7 @@ def get_schema():
     return whoosh.fields.Schema(
         path=whoosh.fields.ID(unique=True, stored=True),
         content=whoosh.fields.TEXT(stored=True),
-        modtime=whoosh.fields.STORED
+        modtime=whoosh.fields.STORED,
     )
 
 
@@ -55,11 +55,11 @@ def add_doc(index_writer, path):
 
     content = ""
     for pagenumber in arc:
-        content += (arc[pagenumber] + "\n\n")
+        content += arc[pagenumber] + "\n\n"
     index_writer.add_document(
         content=content,
         path=os.path.join(citekey, "ocr", filename),
-        modtime=os.path.getmtime(arc_path)
+        modtime=os.path.getmtime(arc_path),
     )
 
 
@@ -70,7 +70,6 @@ def make_clean_index(bib_dir):
     for doc_path in list_all_docs_in_bibliography(bib_dir=bib_dir):
         add_doc(index_writer=index_writer, path=doc_path)
     index_writer.commit()
-
 
 
 def increment_index(bib_dir):
@@ -86,29 +85,29 @@ def increment_index(bib_dir):
         index_writer = index.writer()
 
         for fields in searcher.all_stored_fields():
-            indexed_path = fields['path']
+            indexed_path = fields["path"]
             citekey, original_filename = _split_path(indexed_path)
             indexed_paths.add(os.path.join(bib_dir, indexed_path))
 
             if not os.path.exists(indexed_path):
-                index_writer.delete_by_term('path', indexed_path)
+                index_writer.delete_by_term("path", indexed_path)
                 print(
                     citekey,
                     original_filename,
                     "Delete from Index.",
-                    "This file was deleted since it was indexed"
+                    "This file was deleted since it was indexed",
                 )
 
             else:
-                indexed_time = fields['modtime']
+                indexed_time = fields["modtime"]
                 mtime = os.path.getmtime(indexed_path)
                 if mtime > indexed_time:
-                    index_writer.delete_by_term('path', indexed_path)
+                    index_writer.delete_by_term("path", indexed_path)
                     to_index.add(os.path.join(bib_dir, indexed_path))
                     print(
                         citekey,
                         original_filename,
-                        "The file has changed, delete and reindex"
+                        "The file has changed, delete and reindex",
                     )
 
     for path in list_all_docs_in_bibliography(bib_dir=bib_dir):

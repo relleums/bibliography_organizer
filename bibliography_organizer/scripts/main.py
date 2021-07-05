@@ -11,8 +11,7 @@ def main():
     commands = parser.add_subparsers(help="Commands", dest="command")
 
     init = commands.add_parser(
-        "init",
-        help="Initialize the bibliography-organizer."
+        "init", help="Initialize the bibliography-organizer."
     )
 
     status = commands.add_parser("status", help="Print status.")
@@ -21,7 +20,7 @@ def main():
         metavar="DIR",
         nargs="?",
         type=str,
-        help="Specify the entry."
+        help="Specify the entry.",
     )
 
     search = commands.add_parser("search", help="Full text search.")
@@ -32,19 +31,18 @@ def main():
         help=(
             "Run a full text search on the documents. "
             "Only for documents in the search-index."
-        )
+        ),
     )
 
     update = commands.add_parser(
         "update",
         help=(
             "Updates optical-character-recognition, icons, and search-index."
-        )
+        ),
     )
     update.add_argument(
         "--overwrite", action="store_true", help="Overwrite existing cache."
     )
-
 
     args = parser.parse_args()
     bib_dir = os.getcwd()
@@ -65,20 +63,17 @@ def main():
         for search_result in search_results:
             entry_dir = os.path.join(bib_dir, search_result["citekey"])
             biborg.Entry.print_overview(
-                entry_dir,
-                original_filename=search_result["original"]
+                entry_dir, original_filename=search_result["original"]
             )
 
     elif args.command == "update":
         entry_dirs = biborg.Bibliography.list_entry_dirs(bib_dir=bib_dir)
         for entry_dir in entry_dirs:
             biborg.Entry.make_icon(
-                entry_dir=entry_dir,
-                overwrite=args.overwrite,
+                entry_dir=entry_dir, overwrite=args.overwrite,
             )
             biborg.Entry.make_optical_character_recognition(
-                entry_dir=entry_dir,
-                overwrite=args.overwrite,
+                entry_dir=entry_dir, overwrite=args.overwrite,
             )
         biborg.Index.increment_index(bib_dir=bib_dir)
 
