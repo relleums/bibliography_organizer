@@ -5,7 +5,7 @@ import whoosh.query
 import whoosh.qparser
 import os
 import glob
-from . import optical_reader
+from . import Reader
 
 
 def _make_path(citekey, original_filename, pagenumber):
@@ -48,7 +48,7 @@ def add_entry(bib_dir, citekey):
     for string_archive_path in glob.glob(orc_wildcard):
         filename = os.path.basename(string_archive_path)
         original_filename = os.path.splitext(filename)[0]
-        arc = optical_reader.read_string_archive(path=string_archive_path)
+        arc = Reader.read_string_archive(path=string_archive_path)
 
         for pagenumber in arc:
             writer.add_document(
