@@ -2,6 +2,7 @@ import os
 import glob
 from . import Document
 from . import Reader
+from . import Status
 
 
 def list_original_paths(entry_dir):
@@ -73,3 +74,20 @@ def make_optical_character_recognition(entry_dir, overwrite=False):
                     print(err)
     else:
         print("No original   : ", os.path.basename(entry_dir))
+
+
+def update(entry_dir, overwrite=False):
+    make_icon(entry_dir, overwrite)
+    make_optical_character_recognition(entry_dir, overwrite)
+
+
+def print_status(entry_dir):
+    entry_dir = os.path.normpath(entry_dir)
+    errors = Status.list_errors_in_entry(entry_dir=entry_dir)
+    citekey = os.path.basename(entry_dir)
+    for msg in errors:
+        err_code_str = msg[0:4]
+        err_msg = msg[5:]
+        print(
+            "{:40s} {:s} {:s}".format(citekey, err_code_str, err_msg)
+        )
