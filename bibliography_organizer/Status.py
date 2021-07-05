@@ -55,7 +55,7 @@ def list_errors_in_entry(entry_dir):
         e.append("E201:Entry has no 'reference.bib' file.")
 
     if os.path.isdir(opj(entry_dir, "original")):
-        original_paths = Entry.get_original_paths(entry_dir)
+        original_paths = Entry.list_original_paths(entry_dir)
         if len(original_paths):
             orig_basenames = [os.path.basename(p) for p in original_paths]
             orig_basenames = [os.path.splitext(p)[0] for p in orig_basenames]
@@ -82,6 +82,3 @@ def list_errors_in_entry(entry_dir):
         e.append("E301:Entry has no 'original' directory.")
 
     return e
-
-
-def print(msg):

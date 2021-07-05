@@ -39,7 +39,7 @@ def main():
     if args.command == "status":
         biborg.Bibliography.print_status(bib_dir=os.getcwd())
     elif args.command == "search":
-        search_instance = biborg.Search.Search(bib_dir=os.getcwd())
+        search_instance = biborg.Index.Search(bib_dir=os.getcwd())
         search_results = search_instance.search(args.phrase)
         print(search_results)
     elif args.command == "update":
