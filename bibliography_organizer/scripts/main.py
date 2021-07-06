@@ -33,9 +33,6 @@ def main():
             "Updates optical-character-recognition, icons, and search-index."
         ),
     )
-    update.add_argument(
-        "--overwrite", action="store_true", help="Overwrite existing cache."
-    )
 
     args = parser.parse_args()
     bib_dir = os.getcwd()
@@ -60,11 +57,9 @@ def main():
     elif args.command == "update":
         entry_dirs = biborg.Bibliography.list_entry_dirs(bib_dir=bib_dir)
         for entry_dir in entry_dirs:
-            biborg.Entry.make_icon(
-                entry_dir=entry_dir, overwrite=args.overwrite,
-            )
-            biborg.Entry.make_optical_character_recognition(
-                entry_dir=entry_dir, overwrite=args.overwrite,
+            biborg.Entry.make_icon(entry_dir=entry_dir)
+            biborg.Entry.update_optical_character_recognition(
+                entry_dir=entry_dir
             )
         biborg.Index.increment_index(bib_dir=bib_dir)
 

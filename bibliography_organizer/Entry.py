@@ -1,6 +1,7 @@
 import os
 import glob
 import textwrap
+import shutil
 from . import Document
 from . import Reader
 from . import Status
@@ -34,14 +35,14 @@ def vprint(verbose, *args):
         print(*args)
 
 
-def make_icon(entry_dir, overwrite=False, verbose=False):
+def make_icon(entry_dir, verbose=False):
     entry_dir = os.path.normpath(entry_dir)
     citekey = os.path.basename(entry_dir)
     original_paths = list_original_paths(entry_dir)
 
     if len(original_paths) > 0:
         icon_path = os.path.join(entry_dir, "icon.jpg")
-        if not os.path.exists(icon_path) or overwrite:
+        if not os.path.exists(icon_path):
             print(citekey, ", Create icon.")
             Document.extract_icon(
                 document_path=original_paths[0],
@@ -54,41 +55,67 @@ def make_icon(entry_dir, overwrite=False, verbose=False):
         vprint(verbose, citekey, ", No originals.")
 
 
-def make_optical_character_recognition(
-    entry_dir, overwrite=False, verbose=False
+def list_ocr_paths(entry_dir):
+    entry_dir = os.path.normpath(entry_dir)
+    arcs = []
+    orc_wildcard = os.path.join(entry_dir, "ocr", "*.tar")
+    for archive_path in glob.glob(orc_wildcard):
+        arcs.append(archive_path)
+    return arcs
+
+
+def hide_file_in_its_directory(path):
+    path = os.path.normpath(path)
+    basename = os.path.basename(path)
+    dirname = os.path.dirname(path)
+    shutil.move(
+        src=os.path.join(dirname, basename),
+        dst=os.path.join(dirname, "." + basename)
+    )
+
+
+def update_optical_character_recognition(
+    entry_dir, verbose=False
 ):
     entry_dir = os.path.normpath(entry_dir)
     citekey = os.path.basename(entry_dir)
+    os.makedirs(os.path.join(entry_dir, "ocr"), exist_ok=True)
+
     original_paths = list_original_paths(entry_dir)
+    ocr_paths = list_ocr_paths(entry_dir)
 
-    if len(original_paths):
-        os.makedirs(os.path.join(entry_dir, "ocr"), exist_ok=True)
-        basenames_ext = [os.path.basename(p) for p in original_paths]
+    for ocr_path in ocr_paths:
+        ocr_original_filename = os.path.splitext(os.path.basename(ocr_path))[0]
+        ocr_original_path = os.path.join(
+            entry_dir, "original", ocr_original_filename
+        )
 
-        for i in range(len(original_paths)):
-            document_path = os.path.join(
-                entry_dir, "original", basenames_ext[i]
+        if not os.path.exists(ocr_original_path):
+            vprint(
+                verbose,
+                "{:s} : No original for OCR {:s}. Ignore OCR.".format(
+                    citekey, ocr_original_filename
+                )
             )
-            out_path = os.path.join(
-                entry_dir, "ocr", basenames_ext[i] + ".tar"
+            hide_file_in_its_directory(ocr_path)
+
+    for original_path in original_paths:
+        original_filename = os.path.basename(original_path)
+        orig_ocr_path = os.path.join(
+            entry_dir, "ocr", original_filename + ".tar"
+        )
+        if orig_ocr_path not in ocr_paths:
+            vprint(
+                verbose, "{:s} : New original {:s}. Create OCR.".format(
+                    citekey, original_filename
+                )
             )
-            if os.path.exists(out_path) and not overwrite:
-                vprint(verbose, citekey, ", Already done", basenames_ext[i])
-            else:
-                print(citekey, ", Read", basenames_ext[i])
-                try:
-                    Reader.document_to_string_archive(
-                        document_path=document_path, out_path=out_path,
-                    )
-                except Exception as err:
-                    print(err)
-    else:
-        vprint(verbose, citekey, ", No originals")
-
-
-def update(entry_dir, overwrite=False):
-    make_icon(entry_dir, overwrite)
-    make_optical_character_recognition(entry_dir, overwrite)
+            try:
+                Reader.document_to_string_archive(
+                    document_path=original_path, out_path=orig_ocr_path,
+                )
+            except Exception as err:
+                print(err)
 
 
 def print_status(entry_dir):
