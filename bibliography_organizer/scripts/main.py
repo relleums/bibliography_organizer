@@ -2,6 +2,19 @@ import bibliography_organizer as biborg
 import argparse
 import os
 
+def is_bibliography_dir(bib_dir):
+    return os.path.exists(
+        os.path.join(bib_dir, biborg.Bibliography.HIDDEN_WORK_DIRNAME)
+    )
+
+
+def print_warning_no_bibliography_dir(bib_dir):
+    print(
+        "Missing ",
+        os.path.join(bib_dir, biborg.Bibliography.HIDDEN_WORK_DIRNAME),
+        "\nMaybe this is not a bibliography directory?"
+    )
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -41,10 +54,17 @@ def main():
         biborg.Bibliography.init(bib_dir=bib_dir)
 
     elif args.command == "status":
+        if not is_bibliography_dir(bib_dir):
+            print_warning_no_bibliography_dir(bib_dir)
+
         for entry_dir in biborg.Bibliography.list_entry_dirs(bib_dir=bib_dir):
             biborg.Entry.print_status(entry_dir)
 
     elif args.command == "search":
+        if not is_bibliography_dir(bib_dir):
+            print_warning_no_bibliography_dir(bib_dir)
+            return
+
         search_instance = biborg.Index.Search(bib_dir=bib_dir)
         search_results = search_instance.search(args.phrase)
 
@@ -55,6 +75,10 @@ def main():
             )
 
     elif args.command == "update":
+        if not is_bibliography_dir(bib_dir):
+            print_warning_no_bibliography_dir(bib_dir)
+            return
+
         entry_dirs = biborg.Bibliography.list_entry_dirs(bib_dir=bib_dir)
         for entry_dir in entry_dirs:
             biborg.Entry.make_icon(entry_dir=entry_dir)
