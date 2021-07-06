@@ -5,32 +5,32 @@ import os
 
 def main():
     parser = argparse.ArgumentParser(
-        prog="bibliography-organizer",
-        description="A collection of tools to keep track of your references.",
+        prog="bib",
+        description="Organize your digital library and references.",
     )
     commands = parser.add_subparsers(help="Commands", dest="command")
 
     init = commands.add_parser(
-        "init", help="Initialize the bibliography-organizer."
+        "init", help="Initialize the bibliography-organizer in this directory."
     )
 
-    status = commands.add_parser("status", help="Print status.")
+    status = commands.add_parser("status", help="Print the status.")
 
-    search = commands.add_parser("search", help="Full text search.")
+    search = commands.add_parser("search", help="Search in full text.")
     search.add_argument(
         "phrase",
         metavar="PHRASE",
         type=str,
         help=(
-            "Run a full text search on the documents. "
-            "Only for documents in the search-index."
+            "The phrase to search for. Use AND, OR, NOT and parantheses ()."
         ),
     )
 
     update = commands.add_parser(
         "update",
         help=(
-            "Updates optical-character-recognition, icons, and search-index."
+            "Update optical-character-recognition (OCR), "
+            "icons, and search-index."
         ),
     )
 
