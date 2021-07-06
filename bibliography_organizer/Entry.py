@@ -70,13 +70,11 @@ def hide_file_in_its_directory(path):
     dirname = os.path.dirname(path)
     shutil.move(
         src=os.path.join(dirname, basename),
-        dst=os.path.join(dirname, "." + basename)
+        dst=os.path.join(dirname, "." + basename),
     )
 
 
-def update_optical_character_recognition(
-    entry_dir, verbose=False
-):
+def update_optical_character_recognition(entry_dir, verbose=False):
     entry_dir = os.path.normpath(entry_dir)
     citekey = os.path.basename(entry_dir)
     os.makedirs(os.path.join(entry_dir, "ocr"), exist_ok=True)
@@ -95,7 +93,7 @@ def update_optical_character_recognition(
                 verbose,
                 "{:s} : No original for OCR {:s}. Ignore OCR.".format(
                     citekey, ocr_original_filename
-                )
+                ),
             )
             hide_file_in_its_directory(ocr_path)
 
@@ -106,9 +104,10 @@ def update_optical_character_recognition(
         )
         if orig_ocr_path not in ocr_paths:
             vprint(
-                verbose, "{:s} : New original {:s}. Create OCR.".format(
+                verbose,
+                "{:s} : New original {:s}. Create OCR.".format(
                     citekey, original_filename
-                )
+                ),
             )
             try:
                 Reader.document_to_string_archive(
