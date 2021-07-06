@@ -2,14 +2,6 @@ import os
 import tempfile
 import subprocess
 import shutil
-import PIL
-
-
-def remove_metadata_from_image(inpath, outpath):
-    # read and write with PIL to remove all metadata.
-    # Some images store large filesizes of metadata.
-    img = PIL.Image.open(inpath)
-    img.save(outpath)
 
 
 def extract_icon(document_path, out_path, out_size=100.0e3):
@@ -26,6 +18,7 @@ def extract_icon(document_path, out_path, out_size=100.0e3):
         subprocess.call(
             [
                 "convert",
+                "-strip",
                 "-density",
                 "150",
                 "-alpha",
@@ -34,8 +27,6 @@ def extract_icon(document_path, out_path, out_size=100.0e3):
                 tmp0_out_path,
             ]
         )
-
-        remove_metadata_from_image(inpath=tmp0_out_path, outpath=tmp0_out_path)
 
         quality = 92
         min_icon_size = 128
