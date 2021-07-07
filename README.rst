@@ -1,5 +1,5 @@
-Organize and Search your Bibliography
-=====================================
+Bibliography Organizer
+======================
 |BlackStyle|
 
 Helps you to organize and search your local bibliography. ``biborg`` is not invasive, it does not touch your cited documents or bibtex-files. ``biborg`` only offers suggestions to organize your files, as well as a full-text-search.
@@ -69,7 +69,7 @@ The ``bib_dir`` can be any directory in your filesystem. ``biborg``'s command-li
 
 ``citekey``
 ~~~~~~~~~~~
-The ``citekey`` is a short string to identify your reference. In LaTex you use ``\cite{citekey}``.
+The ``citekey`` is a string to identify your reference, e.g. 'darwin1859origin'. In LaTex you use ``\cite{citekey}``.
 
 ``bib_dir``
 ~~~~~~~~~~~
