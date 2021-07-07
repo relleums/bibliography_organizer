@@ -83,6 +83,19 @@ An ``entry_dir`` is directory inside your ``bib_dir``. An ``entry_dir`` has the 
 ~~~~~~~~~~~~
 In every ``entry_dir`` is the original directory. It contains the original files to be cited. Usually, there is only one original-file corresponding to one ``citekey``. But sometimes the original might be a collection of files like a web-page or such. The user creates the original directory and populates it with her originals.
 
+``ocr``
+~~~~~~~~
+The ``ocr`` directory is created and updated by ``biborg``. The ``ocr`` directory contains the extracted text from the original files. The text is extracted using optical character recognition. Each original file has one archive in the ``ocr`` directory. The archive contains the text of the individual pages from the original.
+This is used to fill the search-index.
+
+``icon``
+~~~~~~~~
+The ``icon.jpg`` is a small image rendered from the first page of the primary original-file. The ``icon.jpg`` is created by ``biborg``.
+The primary original file has the ``citekey`` as its basename.
+
+``full_text_search_index``
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+This is a hidden directory in ``bib_dir/.bibliography_organizer/full_text_search_index``. It is a cache for the search created and updated by ``biborg``.
 
 To use optical character recognition
 ------------------------------------
