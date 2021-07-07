@@ -8,36 +8,20 @@ Helps you to organize and search your local bibliography. ``biborg`` is not inva
 Commands
 --------
 A set of command-line-tools to help you managing your bibliography. The interface is similar to ``git``.
-
-status
-~~~~~~
-
-.. code::
     
-    bib status
-
+``bib status``
+~~~~~~~~~~~~~~
 Prints a list of errors and warnings when your entries are not structrured as expected, or when entries are missing crucial parts.
 
-
-update
-~~~~~~
-
-.. code::
-
-    bib update
-    
+``bib update``
+~~~~~~~~~~~~~~   
 Tries to update the optical-character-recognition ``ocr``, the ``icon.jpg`` in each entry. Finally updates the search-index in your bibliography directory.
 When new originals were added, they are read and added to the ``ocr``. Likewise ``ocr``-records will be ignored when the corresponding original does not longer exist.
 The ``icon.jpg`` is extracted from the primary original.
 
-search
-~~~~~~
-
-.. code::
-
-    bib search PHRASE
-    
-Searches for your search-PHRASE in the search-index. Results are printed to the command-line. The search-PHRASE may contain logical operators such as AND, OR, NOT, ANDNOT, and ANDMAYBE.
+``bib search``
+~~~~~~~~~~~~~~
+Searches for your search-``PHRASE`` in the search-index. Results are printed to the command-line. The search-``PHRASE`` may contain logical operators such as ``AND``, ``OR``, ``NOT``, ``ANDNOT``, ``ANDMAYBE``, ``(``, and ``)``. See documnetation of ``Whoosh``.
 
 
 Structure
@@ -71,6 +55,9 @@ The ``bib_dir`` can be any directory in your filesystem. ``biborg``'s command-li
     |
     |-- .bibliography_organizer         <-- biborg
         |-- full_text_search_index
+
+Terminology
+-----------
 
 ``citekey``
 ~~~~~~~~~~~
