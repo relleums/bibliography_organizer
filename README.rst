@@ -43,7 +43,7 @@ Searches for your search-PHRASE in the search-index. Results are printed to the 
 Structure
 ---------
 
-The ``bibliography_organizer`` (``biborg``) acts in the ``bibliography_directory``  (``bib_dir``).
+The ``bibliography_organizer``, or ``biborg`` for short, acts in your bibliography directory ``bib_dir``.
 The ``bib_dir`` can be any directory in your filesystem. ``biborg``'s command-line-interface expects the current working directory to be a ``bib_dir``.
 
 
@@ -64,7 +64,7 @@ The ``bib_dir`` can be any directory in your filesystem. ``biborg``'s command-li
     |   |
     |   |-- reference.bib
     |
-    |-- .bibliography_organizer  <--creted automatically.
+    |-- .bibliography_organizer  <--creted by biborg.
         |-- full_text_search_index
 
 ``citekey``
@@ -81,7 +81,11 @@ An ``entry_dir`` is directory inside your ``bib_dir``. An ``entry_dir`` has the 
 
 ``original``
 ~~~~~~~~~~~~
-In every ``entry_dir`` is the original directory. It contains the original files to be cited. Usually, there is only one original-file corresponding to one ``citekey``. But sometimes the original might be a collection of files like a web-page or such. The user creates the original directory and populates it with her originals.
+In every ``entry_dir`` is the original directory. It contains the original files to be cited. Usually, there is only one original-file corresponding to one ``citekey``. But sometimes the original might be a collection of files like a web-page or such. You create the original directory and populate it with your originals.
+
+``reference.bib``
+~~~~~~~~~~~~~~~~~
+A bibtex-file in the ``entry_dir`` that you create. It contains exactly one bibtex-entry. The ``citekey`` in the bibtex-entry is expected to match the ``entry_dir``.
 
 ``ocr``
 ~~~~~~~~
