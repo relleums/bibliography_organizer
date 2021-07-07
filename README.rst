@@ -67,6 +67,18 @@ The ``bib_dir`` can be any directory in your filesystem. ``biborg``'s command-li
     |-- .bibliography_organizer
         |-- full_text_search_index
 
+``citekey``
+~~~~~~~~~~~
+The ``citekey`` is a short string to identify your reference. In your LaTex document you use ``\cite{citekey}``.
+
+Bibliography (``bib_dir``)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+The base directory of your local bibliography. It contains your entries and self generated caches such as the search-index.
+
+Entry (``entry_dir``)
+~~~~~~~~~~~~~~~~~~~~~
+An entry is directory inside the ``bib_dir``. An ``entry_dir`` has the name of the ``citekey``. The ``entry_dir`` contains the original files and a bibtex reference.
+
 
 To use optical character recognition
 ------------------------------------
