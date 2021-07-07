@@ -55,7 +55,16 @@ def list_errors_in_bibtex_entry(bib_entry):
         e.append("E230:Bibtex has no 'title' field.")
 
     if "author" not in bib_entry["fields"]:
-        e.append("E230:Bibtex has no 'author' field.")
+        e.append("E231:Bibtex has no 'author' field.")
+
+    for key in bib_entry["fields"]:
+        value = bib_entry["fields"][key]
+        if Bibtex.is_wrapped_in_braces(value):
+            e.append(
+                "W240:Bibtex value of field '{:s}' "
+                "is wrapped in braces '{{}}'.".format(key)
+            )
+
 
     return e
 
@@ -98,7 +107,7 @@ def list_errors_in_entry(entry_dir):
             orig_basenames = [os.path.splitext(p)[0] for p in orig_basenames]
 
             if not citekey in orig_basenames:
-                e.append("W303:No original file with name of citekey.")
+                e.append("E303:No original file with name of citekey.")
 
             if os.path.exists(opj(entry_dir, "icon.jpg")):
                 if os.stat(opj(entry_dir, "icon.jpg")).st_size > 100e3:

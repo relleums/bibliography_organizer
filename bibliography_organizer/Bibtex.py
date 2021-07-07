@@ -46,3 +46,18 @@ def make_bib_file(bib_dir, entry_dirs=None):
     }
 
     return minimal_bibtex_io.dumps(bib)
+
+
+def is_wrapped_in_braces(text):
+    text_B = bytes(text, encoding="utf8")
+    try:
+        brace_start, brace_stop = minimal_bibtex_io._find_braces_start_stop(
+            B=text_B, opening=b"{", closing=b"}"
+        )
+        if brace_start == 0 and brace_stop == len(text_B)-1:
+            return True
+
+    except AssertionError as err:
+        pass
+
+    return False
