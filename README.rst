@@ -1,13 +1,13 @@
-Organize your local bibliography
-================================
+Organize and Search your Bibliography
+=====================================
 |BlackStyle|
 
-Helps you to organize your local bibliography.
-
+Helps you to organize and search your local bibliography. ``biborg`` is not invasive, it does not touch your cited documents or bibtex-files. ``biborg`` only offers suggestions to organize your files, as well as a full-text-search.
+``biborg`` acts in the filesystem. Its interface is motivated by the version-control-tool ``git``.
 
 Commands
 --------
-A set of command-line-tools help you to manage your library. The interface is similar to ``git``.
+A set of command-line-tools to help you managing your bibliography. The interface is similar to ``git``.
 
 status
 ~~~~~~
