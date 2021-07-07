@@ -50,7 +50,7 @@ The ``bib_dir`` can be any directory in your filesystem. ``biborg``'s command-li
 .. code::
 
     bib_dir
-    |-- citekey_A  <--entry_dir created by user.
+    |-- citekey_A
     |   |-- original
     |   |   |-- citekey_A.pdf
     |   |   |-- comments.ps
@@ -58,13 +58,18 @@ The ``bib_dir`` can be any directory in your filesystem. ``biborg``'s command-li
     |   |
     |   |-- reference.bib
     |
-    |-- citekey_B  <--entry_dir created by user.
-    |   |-- original
-    |   |   |-- citekey_B.html
+    |-- citekey_B                       <-- you
+    |   |-- original                    <-- you
+    |   |   |-- citekey_B.html          <-- you
     |   |
-    |   |-- reference.bib
+    |   |-- reference.bib               <-- you
+    |   | 
+    |   |-- ocr                         <-- biborg
+    |   |   |-- citekey_B.html.tar      <-- biborg
+    |   |
+    |   |-- icon.jpg                    <-- biborg
     |
-    |-- .bibliography_organizer  <--creted by biborg.
+    |-- .bibliography_organizer         <-- biborg
         |-- full_text_search_index
 
 ``citekey``
