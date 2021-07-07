@@ -8,13 +8,13 @@ Helps you to organize and search your local bibliography. ``biborg`` is not inva
 Commands
 --------
 A set of command-line-tools to help you managing your bibliography. The interface is similar to ``git``.
-    
+
 ``bib status``
 ~~~~~~~~~~~~~~
 Prints a list of errors and warnings when your entries are not structrured as expected, or when entries are missing crucial parts.
 
 ``bib update``
-~~~~~~~~~~~~~~   
+~~~~~~~~~~~~~~
 Tries to update the optical-character-recognition ``ocr``, the ``icon.jpg`` in each entry. Finally updates the search-index in your bibliography directory.
 When new originals were added, they are read and added to the ``ocr``. Likewise ``ocr``-records will be ignored when the corresponding original does not longer exist.
 The ``icon.jpg`` is extracted from the primary original.
