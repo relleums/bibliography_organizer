@@ -40,6 +40,33 @@ search
 Searches for your search-PHRASE in the search-index. Results are printed to the command-line. The search-PHRASE may contain logical operators such as AND, OR, NOT, ANDNOT, and ANDMAYBE.
 
 
+Structure
+---------
+
+The ``bibliography_organizer`` (``biborg``) acts in the ``bibliography_directory``  (``bib_dir``).
+The ``bib_dir`` can be any directory in your filesystem. ``biborg``'s command-line-interface expects the current working directory to be a ``bib_dir``.
+
+
+.. code::
+
+    bib_dir
+    |-- citekey_A
+    |   |-- original
+    |   |   |-- citekey_A.pdf
+    |   |   |-- comments.ps
+    |   |   |-- preprint.pdf
+    |   |
+    |   |-- reference.bib
+    |
+    |-- citekey_B
+    |   |-- original
+    |   |   |-- citekey_B.html
+    |   |
+    |   |-- reference.bib
+    |
+    |-- .bibliography_organizer
+        |-- full_text_search_index
+
 
 To use optical character recognition
 ------------------------------------
