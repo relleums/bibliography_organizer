@@ -50,7 +50,7 @@ The ``bib_dir`` can be any directory in your filesystem. ``biborg``'s command-li
 .. code::
 
     bib_dir
-    |-- citekey_A
+    |-- citekey_A  <--entry_dir created by user.
     |   |-- original
     |   |   |-- citekey_A.pdf
     |   |   |-- comments.ps
@@ -58,26 +58,30 @@ The ``bib_dir`` can be any directory in your filesystem. ``biborg``'s command-li
     |   |
     |   |-- reference.bib
     |
-    |-- citekey_B
+    |-- citekey_B  <--entry_dir created by user.
     |   |-- original
     |   |   |-- citekey_B.html
     |   |
     |   |-- reference.bib
     |
-    |-- .bibliography_organizer
+    |-- .bibliography_organizer  <--creted automatically.
         |-- full_text_search_index
 
 ``citekey``
 ~~~~~~~~~~~
-The ``citekey`` is a short string to identify your reference. In your LaTex document you use ``\cite{citekey}``.
+The ``citekey`` is a short string to identify your reference. In LaTex you use ``\cite{citekey}``.
 
-Bibliography (``bib_dir``)
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-The base directory of your local bibliography. It contains your entries and self generated caches such as the search-index.
+``bib_dir``
+~~~~~~~~~~~
+The base directory of your local bibliography. Here, you create and collect your entries in ``entry_dir``s.  ``biborg`` will create a hidden cache in here named ``.bibliography_organizer``.
 
-Entry (``entry_dir``)
-~~~~~~~~~~~~~~~~~~~~~
-An entry is directory inside the ``bib_dir``. An ``entry_dir`` has the name of the ``citekey``. The ``entry_dir`` contains the original files and a bibtex reference.
+``entry_dir``
+~~~~~~~~~~~~~
+An ``entry_dir`` is directory inside your ``bib_dir``. An ``entry_dir`` has the name of the ``citekey``. The ``entry_dir`` contains the original files and a bibtex reference. You create, and populate the ``entry_dir``s in your ``bib_dir``.
+
+``original``
+~~~~~~~~~~~~
+In every ``entry_dir`` is the original directory. It contains the original files to be cited. Usually, there is only one original-file corresponding to one ``citekey``. But sometimes the original might be a collection of files like a web-page or such. The user creates the original directory and populates it with her originals.
 
 
 To use optical character recognition
