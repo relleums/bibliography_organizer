@@ -130,7 +130,7 @@ def print_status(entry_dir):
 def _print_field(field, width, indent, num_lines=-1):
     out = ""
     out += " " * indent
-    lines = textwrap.wrap(Bibtex.normalize(field), width=width)
+    lines = textwrap.wrap(field, width=width)
     if num_lines > 0:
         lines = lines[0:num_lines]
     out += ("\n" + " " * indent).join(lines) + "\n"
@@ -150,8 +150,9 @@ def print_overview(
 
     bib_file_path = os.path.join(entry_dir, "reference.bib")
     if os.path.exists(bib_file_path):
-        bib = Bibtex.read_bib_entries(path=bib_file_path)[0]
-        fields = bib["fields"]
+        bib = Bibtex.read(path=bib_file_path)
+        bib_entry = bib["entries"][0]
+        fields = bib_entry["fields"]
 
         for key in ["title", "author", "year"]:
             if key in fields:

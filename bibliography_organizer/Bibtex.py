@@ -2,62 +2,49 @@ import minimal_bibtex_io
 import os
 from . import Bibliography
 
-def read_bib_entries(path):
-    """
-    Reads a bibtex-file and parses only the entries.
-    I.e. it ignores '@string' and '@preamble' entries.
-    """
+
+def read_raw(path):
     with open(path, "rb") as f:
         raw_bib = minimal_bibtex_io.loads(f.read())
-        bib = minimal_bibtex_io.normalize(raw_bib)
-
-    if bib["strings"] or bib["preambles"]:
-        print("WARNING: Ignoring @string and @preamble in {:s}".format(path))
-
-    return bib["entries"]
+    return raw_bib
 
 
-def normalize(text):
-    raw = str(text)
-    raw = raw.replace("{", "")
-    raw = raw.replace("}", "")
-    raw = " ".join(raw.split())
-    return raw
+def normalize(raw_bib):
+    return minimal_bibtex_io.normalize(raw_bib)
+
+
+def read(path):
+    raw_bib = read_raw(path)
+    return normalize(raw_bib)
 
 
 def make_bib_file(bib_dir, entry_dirs=None):
     if entry_dirs is None:
         entry_dirs = Bibliography.list_entry_dirs(bib_dir)
 
-    entries = []
-    for entry_dir in entry_dirs:
-        try:
-            entry = read_bib_entries(
-                os.path.join(entry_dir, "reference.bib")
-            )[0]
-            entries.append(entry)
-        except Exception as err:
-            print(err)
-
-    bib = {
+    out = {
         "strings": [],
         "preambles": [],
-        "entries": entries,
+        "entries": [],
     }
-
-    return minimal_bibtex_io.dumps(bib)
+    for entry_dir in entry_dirs:
+        try:
+            bib = read(os.path.join(entry_dir, "reference.bib"))
+            for preamble in bib["preambles"]:
+                out["preamble"].append(preamble)
+            for string in bib["strings"]:
+                out["strings"].append(string)
+            for entry in bib["entries"]:
+                out["entries"].append(entry)
+        except Exception as err:
+            print(err)
+    return minimal_bibtex_io.dumps(out)
 
 
 def is_wrapped_in_braces(text):
-    text_B = bytes(text, encoding="utf8")
-    try:
-        brace_start, brace_stop = minimal_bibtex_io._find_braces_start_stop(
-            B=text_B, opening=b"{", closing=b"}"
-        )
-        if brace_start == 0 and brace_stop == len(text_B)-1:
-            return True
-
-    except AssertionError as err:
-        pass
-
-    return False
+    B = bytes(text, encoding="utf8")
+    start, stop = minimal_bibtex_io._find_braces_start_stop(B=B)
+    if start == 0 and stop == len(B) - 1:
+        return True
+    else:
+        return False

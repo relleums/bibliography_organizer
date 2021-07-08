@@ -64,8 +64,6 @@ def list_errors_in_bibtex_entry(bib_entry):
                 "W240:Bibtex value of field '{:s}' "
                 "is wrapped in braces '{{}}'.".format(key)
             )
-
-
     return e
 
 
@@ -81,18 +79,14 @@ def list_errors_in_entry(entry_dir):
 
     if os.path.exists(opj(entry_dir, "reference.bib")):
         try:
-            bib_entries = Bibtex.read_bib_entries(
-                path=opj(entry_dir, "reference.bib")
-            )
+            bib = Bibtex.read(path=opj(entry_dir, "reference.bib"))
 
-            if len(bib_entries) > 1:
+            if len(bib["entries"]) > 1:
                 e.append("E203:File 'reference.bib' has more than one entry.")
 
-            bib_entry = bib_entries[0]
-
+            bib_entry = bib["entries"][0]
             if bib_entry["citekey"] != citekey:
                 e.append("E204:File 'reference.bib' has different citekey.")
-
             e += list_errors_in_bibtex_entry(bib_entry=bib_entry)
 
         except Exception as err:

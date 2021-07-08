@@ -2,6 +2,7 @@ import bibliography_organizer as biborg
 import argparse
 import os
 
+
 def is_bibliography_dir(bib_dir):
     return os.path.exists(
         os.path.join(bib_dir, biborg.Bibliography.HIDDEN_WORK_DIRNAME)
@@ -12,7 +13,7 @@ def print_warning_no_bibliography_dir(bib_dir):
     print(
         "Missing ",
         os.path.join(bib_dir, biborg.Bibliography.HIDDEN_WORK_DIRNAME),
-        "\nMaybe this is not a bibliography directory?"
+        "\nMaybe this is not a bibliography directory?",
     )
 
 
