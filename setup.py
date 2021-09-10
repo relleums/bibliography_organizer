@@ -5,7 +5,7 @@ with open("README.rst", "r") as f:
 
 setuptools.setup(
     name="bibliography_organizer",
-    version="1.1.1",
+    version="1.1.2",
     description="Organize your bibliography",
     long_description=long_description,
     url="https://github.com/relleums",

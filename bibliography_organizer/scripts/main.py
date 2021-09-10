@@ -48,6 +48,21 @@ def main():
         ),
     )
 
+    export_bibtex = commands.add_parser(
+        "export-bibtex",
+        help=(
+            "Export all reference.bib into a single file."
+        ),
+    )
+    export_bibtex.add_argument(
+        "path",
+        metavar="PATH",
+        type=str,
+        help=(
+            "The output-path of the bibtex-file."
+        ),
+    )
+
     args = parser.parse_args()
     bib_dir = os.getcwd()
 
@@ -88,6 +103,14 @@ def main():
             )
         biborg.Index.increment_index(bib_dir=bib_dir)
 
+    elif args.command == "export-bibtex":
+        if not is_bibliography_dir(bib_dir):
+            print_warning_no_bibliography_dir(bib_dir)
+            return
+
+        bib_str = biborg.Bibtex.make_bib_file(bib_dir=bib_dir)
+        with open(args.path, "wt") as f:
+            f.write(bib_str)
 
 if __name__ == "__main__":
     main()
