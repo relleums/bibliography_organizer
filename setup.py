@@ -1,6 +1,6 @@
 import setuptools
 
-with open("README.rst", "r") as f:
+with open("README.rst", "r", encoding="utf-8") as f:
     long_description = f.read()
 
 setuptools.setup(
@@ -8,7 +8,11 @@ setuptools.setup(
     version="1.1.2",
     description="Organize your bibliography",
     long_description=long_description,
-    url="https://github.com/relleums",
+    long_description_content_type="text/x-rst",
+    url="https://github.com/relleums/bibliography_organizer",
+    project_urls={
+        "Bug Tracker": "https://github.com/relleums/bibliography_organizer/issues",
+    },
     author="Sebastian Achim Mueller",
     author_email="sebastian-achim.mueller@mpi-hd.mpg.de",
     license="MIT",
