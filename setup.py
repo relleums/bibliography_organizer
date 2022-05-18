@@ -4,7 +4,7 @@ with open("README.rst", "r") as f:
     long_description = f.read()
 
 setuptools.setup(
-    name="bibliography_organizer",
+    name="bibliography_organizer_sebastian-achim-mueller",
     version="1.1.2",
     description="Organize your bibliography",
     long_description=long_description,
@@ -13,7 +13,11 @@ setuptools.setup(
     author_email="sebastian-achim.mueller@mpi-hd.mpg.de",
     license="MIT",
     packages=["bibliography_organizer", "bibliography_organizer.scripts"],
-    install_requires=["minimal_bibtex_io", "pytesseract", "whoosh"],
+    install_requires=[
+        "minimal_bibtex_io_sebastian-achim-mueller",
+        "pytesseract",
+        "whoosh",
+    ],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
