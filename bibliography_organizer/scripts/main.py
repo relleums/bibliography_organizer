@@ -49,18 +49,13 @@ def main():
     )
 
     export_bibtex = commands.add_parser(
-        "export-bibtex",
-        help=(
-            "Export all reference.bib into a single file."
-        ),
+        "export-bibtex", help=("Export all reference.bib into a single file."),
     )
     export_bibtex.add_argument(
         "path",
         metavar="PATH",
         type=str,
-        help=(
-            "The output-path of the bibtex-file."
-        ),
+        help=("The output-path of the bibtex-file."),
     )
 
     args = parser.parse_args()
@@ -111,6 +106,7 @@ def main():
         bib_str = biborg.Bibtex.make_bib_file(bib_dir=bib_dir)
         with open(args.path, "wt") as f:
             f.write(bib_str)
+
 
 if __name__ == "__main__":
     main()
