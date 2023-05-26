@@ -1,5 +1,6 @@
 import minimal_bibtex_io
 import os
+import re as regular_expression
 from . import Bibliography
 
 
@@ -18,7 +19,14 @@ def read(path):
     return normalize(raw_bib)
 
 
-def make_bib_file(bib_dir, entry_dirs=None):
+ENTRY_FMT = {}
+ENTRY_FMT["author"] = {
+    "max_num_authors": 5,
+    "abbreviate_secondary_names": True,
+}
+
+
+def make_bib_file(bib_dir, entry_dirs=None, fmt=None):
     if entry_dirs is None:
         entry_dirs = Bibliography.list_entry_dirs(bib_dir)
 
@@ -35,6 +43,12 @@ def make_bib_file(bib_dir, entry_dirs=None):
             for string in bib["strings"]:
                 out["strings"].append(string)
             for entry in bib["entries"]:
+
+                if fmt:
+                    entry["fields"]["author"] = format_author_field(
+                        author_field=entry["fields"]["author"], **fmt["author"]
+                    )
+
                 out["entries"].append(entry)
         except Exception as err:
             print(err)
@@ -48,3 +62,52 @@ def is_wrapped_in_braces(text):
         return True
     else:
         return False
+
+
+def tokenize_author_field(author_field):
+    authors = regular_expression.split(
+        " and ", author_field, flags=regular_expression.IGNORECASE
+    )
+    names = []
+    for author in authors:
+        nametokens = str.split(author, ",")
+        nametokens = [str.strip(token) for token in nametokens]
+        names.append(nametokens)
+    return names
+
+
+def format_author_field(
+    author_field, max_num_authors, abbreviate_secondary_names
+):
+    names = tokenize_author_field(author_field)
+    and_others = "others" in names[-1]
+
+    num_inames = len(names) - and_others
+    num_onames = min([max_num_authors, num_inames])
+
+    if num_onames < num_inames:
+        and_others = True
+
+    onames = []
+    for i in range(num_onames):
+        iname = names[i]
+        oname = []
+        for j in range(len(iname)):
+            if j == 0:
+                oname.append(iname[j])
+            else:
+                secondary = iname[j]
+                secondary.strip("{")
+                secondary.strip("}")
+                oname.append(secondary[0])
+        onames.append(oname)
+
+    if and_others:
+        onames.append(["others"])
+
+    out = []
+    for oname in onames:
+        onamestr = str.join(", ", oname)
+        out.append(onamestr)
+
+    return str.join(" and ", out)
