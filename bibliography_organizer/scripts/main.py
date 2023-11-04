@@ -57,6 +57,13 @@ def main():
         type=str,
         help=("The output-path of the bibtex-file."),
     )
+    export_bibtex.add_argument(
+        "number_authors",
+        metavar="NUM",
+        type=int,
+        help=("The number of authors to be listed before `et al.'."),
+        default=-1,
+    )
 
     args = parser.parse_args()
     bib_dir = os.getcwd()
@@ -103,7 +110,16 @@ def main():
             print_warning_no_bibliography_dir(bib_dir)
             return
 
-        bib_str = biborg.Bibtex.make_bib_file(bib_dir=bib_dir)
+        if args.number_authors != -1:
+            entry_fmt = {}
+            entry_fmt["author"] = {
+                "max_num_authors": args.number_authors,
+                "abbreviate_secondary_names": True,
+            }
+        else:
+            entry_fmt = None
+
+        bib_str = biborg.Bibtex.make_bib_file(bib_dir=bib_dir, fmt=entry_fmt)
         with open(args.path, "wt") as f:
             f.write(bib_str)
 
