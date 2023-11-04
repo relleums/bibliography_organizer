@@ -99,7 +99,7 @@ To use optical character recognition
 .. code::
 
     sudo apt-get install tesseract-ocr
-    sudo apt-get install imagemagig
+    sudo apt-get install imagemagick
 
 
 .. |BlackStyle| image:: https://img.shields.io/badge/code%20style-black-000000.svg
