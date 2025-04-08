@@ -1,5 +1,6 @@
 import minimal_bibtex_io
 import os
+import copy
 import re as regular_expression
 from . import Bibliography
 
@@ -26,7 +27,7 @@ ENTRY_FMT["author"] = {
 }
 
 
-def make_bib_file(bib_dir, entry_dirs=None, fmt=None):
+def make_bib_file(bib_dir, entry_dirs=None, fmt=None, citekey_alias=False):
     if entry_dirs is None:
         entry_dirs = Bibliography.list_entry_dirs(bib_dir)
 
@@ -38,18 +39,33 @@ def make_bib_file(bib_dir, entry_dirs=None, fmt=None):
     for entry_dir in entry_dirs:
         try:
             bib = read(os.path.join(entry_dir, "reference.bib"))
-            for preamble in bib["preambles"]:
-                out["preamble"].append(preamble)
-            for string in bib["strings"]:
-                out["strings"].append(string)
-            for entry in bib["entries"]:
+            if len(bib["entries"]) > 0:
+                for preamble in bib["preambles"]:
+                    out["preamble"].append(preamble)
+                for string in bib["strings"]:
+                    out["strings"].append(string)
 
+                entry =  bib["entries"][0]
                 if fmt:
                     entry["fields"]["author"] = format_author_field(
                         author_field=entry["fields"]["author"], **fmt["author"]
                     )
-
                 out["entries"].append(entry)
+
+                if citekey_alias:
+                    citekey_alias_path = os.path.join(entry_dir, "citekey_alias.txt")
+                    if os.path.exists(citekey_alias_path):
+                        with open(citekey_alias_path, "rt") as f:
+                            citekeys = f.read().splitlines()
+                        for citekey in citekeys:
+                            if fmt:
+                                entry["fields"]["author"] = format_author_field(
+                                    author_field=entry["fields"]["author"], **fmt["author"]
+                                )
+                            alias_entry = copy.copy(entry)
+                            alias_entry["citekey"] = citekey
+                            out["entries"].append(alias_entry)
+
         except Exception as err:
             print(err)
     return minimal_bibtex_io.dumps(out)

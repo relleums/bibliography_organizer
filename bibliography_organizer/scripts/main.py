@@ -64,6 +64,10 @@ def main():
         help=("The number of authors to be listed before `et al.'."),
         default=-1,
     )
+    export_bibtex.add_argument(
+        '--citekey-alias',
+        action='store_true',
+    )
 
     args = parser.parse_args()
     bib_dir = os.getcwd()
@@ -119,7 +123,11 @@ def main():
         else:
             entry_fmt = None
 
-        bib_str = biborg.Bibtex.make_bib_file(bib_dir=bib_dir, fmt=entry_fmt)
+        bib_str = biborg.Bibtex.make_bib_file(
+            bib_dir=bib_dir,
+            fmt=entry_fmt,
+            citekey_alias=args.citekey_alias,
+        )
         with open(args.path, "wt") as f:
             f.write(bib_str)
 
