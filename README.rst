@@ -102,5 +102,22 @@ To use optical character recognition
     sudo apt-get install imagemagick
 
 
+bugs
+----
+To covert formats of printable media, ``bibliography_organizer`` calls ``convert``.
+In some versions of ``convert`` one has to grant permission to convert ``.pdf`` documents.
+The error message will look like this:
+
+.. code::
+
+    convert-im6.q16: attempt to perform an operation not allowed by the security policy `PDF' @ error/constitute.c/IsCoderAuthorized/421.
+
+In this case, one has to modify ``/etc/ImageMagick-7/policy.xml`` and add:
+
+.. code::
+
+    <policy domain="coder" rights="read | write" pattern="PDF" />
+
+
 .. |BlackStyle| image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
