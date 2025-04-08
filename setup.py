@@ -30,7 +30,9 @@ setuptools.setup(
         "Intended Audience :: Science/Research",
     ],
     entry_points={
-        "console_scripts": ["bib=bibliography_organizer.scripts.main:main",]
+        "console_scripts": [
+            "bib=bibliography_organizer.scripts.main:main",
+        ]
     },
     python_requires=">=3",
 )

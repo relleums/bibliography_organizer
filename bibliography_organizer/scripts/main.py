@@ -49,7 +49,8 @@ def main():
     )
 
     export_bibtex = commands.add_parser(
-        "export-bibtex", help=("Export all reference.bib into a single file."),
+        "export-bibtex",
+        help=("Export all reference.bib into a single file."),
     )
     export_bibtex.add_argument(
         "path",
@@ -65,8 +66,8 @@ def main():
         default=-1,
     )
     export_bibtex.add_argument(
-        '--citekey-alias',
-        action='store_true',
+        "--citekey-alias",
+        action="store_true",
     )
 
     args = parser.parse_args()

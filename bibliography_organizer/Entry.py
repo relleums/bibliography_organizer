@@ -111,7 +111,8 @@ def update_optical_character_recognition(entry_dir, verbose=False):
             )
             try:
                 Reader.document_to_string_archive(
-                    document_path=original_path, out_path=orig_ocr_path,
+                    document_path=original_path,
+                    out_path=orig_ocr_path,
                 )
             except Exception as err:
                 print(err)

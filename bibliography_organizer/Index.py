@@ -148,7 +148,9 @@ class Search:
                     {
                         "citekey": citekey,
                         "original": original_filename,
-                        "highlight": hit.highlights("content",),
+                        "highlight": hit.highlights(
+                            "content",
+                        ),
                     }
                 )
         return out

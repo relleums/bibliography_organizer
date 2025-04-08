@@ -45,7 +45,7 @@ def make_bib_file(bib_dir, entry_dirs=None, fmt=None, citekey_alias=False):
                 for string in bib["strings"]:
                     out["strings"].append(string)
 
-                entry =  bib["entries"][0]
+                entry = bib["entries"][0]
                 if fmt:
                     entry["fields"]["author"] = format_author_field(
                         author_field=entry["fields"]["author"], **fmt["author"]
@@ -53,14 +53,19 @@ def make_bib_file(bib_dir, entry_dirs=None, fmt=None, citekey_alias=False):
                 out["entries"].append(entry)
 
                 if citekey_alias:
-                    citekey_alias_path = os.path.join(entry_dir, "citekey_alias.txt")
+                    citekey_alias_path = os.path.join(
+                        entry_dir, "citekey_alias.txt"
+                    )
                     if os.path.exists(citekey_alias_path):
                         with open(citekey_alias_path, "rt") as f:
                             citekeys = f.read().splitlines()
                         for citekey in citekeys:
                             if fmt:
-                                entry["fields"]["author"] = format_author_field(
-                                    author_field=entry["fields"]["author"], **fmt["author"]
+                                entry["fields"]["author"] = (
+                                    format_author_field(
+                                        author_field=entry["fields"]["author"],
+                                        **fmt["author"],
+                                    )
                                 )
                             alias_entry = copy.copy(entry)
                             alias_entry["citekey"] = citekey
